@@ -1,15 +1,22 @@
 package ckb_sdk_go
 
 import (
-	"github.com/decred/dcrd/dcrec/secp256k1"
-	"golang.org/x/crypto/blake2b"
+	"encoding/hex"
 	"github.com/adiabat/bech32"
+	"github.com/dchest/blake2b"
+	"github.com/decred/dcrd/dcrec/secp256k1"
+	"strings"
 )
-
+var (
+	config = &blake2b.Config{
+		Size:   32,
+		Person: []byte("ckb-default-hash"),
+	}
+)
 type AddressPrefix string
 const(
 	Mainnet AddressPrefix = "ckb"
-	Testnet AddressPrefix = "kt"
+	Testnet AddressPrefix = "ckt"
 )
 
 type AddressType byte
@@ -30,18 +37,39 @@ type AddressOptions struct  {
 
 var (
 	defaultAddressOptions = &AddressOptions {
-		prefix:Testnet,
+		prefix:Mainnet,
 		type_: HashIdx,
 		codeHashIndex : 0x00,
 	}
 )
 
+func EnsurePrivateKey(priStr string) *secp256k1.PrivateKey {
+	priStr = strings.Replace(priStr, "0x", "", -1);
+	if len(priStr)%2 != 0 {
+		priStr = "0" + priStr
+	}
+	priBytes, _ := hex.DecodeString(priStr)
+	pri, _ := secp256k1.PrivKeyFromBytes(priBytes)
+	return pri
+}
+
+func PrivKeyToAddress(priv *secp256k1.PrivateKey, option *AddressOptions) string {
+	return PublicKeyToAddress(priv.PubKey(), option)
+}
+
 func PublicKeyToAddress(pubkey *secp256k1.PublicKey, option *AddressOptions) string {
 	if option == nil {
 		option = defaultAddressOptions
 	}
-	identifier := blake2b.Sum256(pubkey.Serialize())
-	return bech32Address(identifier[0:20], option)
+	identifier := generateIdentifier(pubkey)
+	return bech32Address(identifier, option)
+}
+
+func generateIdentifier(pubkey *secp256k1.PublicKey) []byte {
+	bytes := pubkey.SerializeCompressed()
+	hash, _ := blake2b.New(config)
+	hash.Write(bytes)
+	return hash.Sum(nil)[0:20]
 }
 
 func bech32Address(identifier []byte, addrOption *AddressOptions) string {
