@@ -1,6 +1,9 @@
 package ckb_sdk_go
 
-import "github.com/ybbus/jsonrpc"
+import (
+	"github.com/ybbus/jsonrpc"
+	"strconv"
+)
 
 type CkbClient struct {
 	url string
@@ -18,7 +21,7 @@ func NewCkbClient(url string) *CkbClient {
 
 func (ckbClient *CkbClient)  GetBlockByNumber(number int) (*RpcBlock, error){
 	rpcBlock := &RpcBlock{}
-	err := ckbClient.client.CallFor(rpcBlock, "get_block_by_number", number)
+	err := ckbClient.client.CallFor(rpcBlock, "get_block_by_number", strconv.Itoa(number))
 	if err != nil {
 		return nil, err
 	}
@@ -80,12 +83,16 @@ func (ckbClient *CkbClient) GetLiveCell(hash *Hash, rpcPoint *RpcOutPoint) (*Rpc
 }
 
 func (ckbClient *CkbClient) GetTipBlockNumber() (int, error){
-	blockNumber := -1
+	blockNumber := ""
 	err := ckbClient.client.CallFor(&blockNumber, "get_tip_block_number")
 	if err != nil {
-		return blockNumber, err
+		return -1, err
 	}
-	return blockNumber, nil
+	num, err := strconv.Atoi(blockNumber)
+	if err != nil {
+		return -1, err
+	}
+	return num, nil
 }
 
 func (ckbClient *CkbClient) GetBlockchainInfo() (*RpcBlockchainInfo, error){
@@ -97,7 +104,7 @@ func (ckbClient *CkbClient) GetBlockchainInfo() (*RpcBlockchainInfo, error){
 	return blockChainInfo, nil
 }
 
-func (ckbClient *CkbClient) SendTransaction(transaction RawTransaction) (*Hash, error){
+func (ckbClient *CkbClient) SendTransaction(transaction *RawTransaction) (*Hash, error){
 	hash := Hash("")
 	err := ckbClient.client.CallFor(&hash, "send_transaction", transaction)
 	if err != nil {
@@ -126,7 +133,7 @@ func (ckbClient *CkbClient) TxPoolInfo() (*RpcTxPoolInfo, error){
 
 func (ckbClient *CkbClient) GetPeers() ( []*RpcNodeInfo, error){
 	peers := []*RpcNodeInfo{}
-	err := ckbClient.client.CallFor(peers, "get_peers")
+	err := ckbClient.client.CallFor(&peers, "get_peers")
 	if err != nil {
 		return nil, err
 	}
@@ -135,15 +142,15 @@ func (ckbClient *CkbClient) GetPeers() ( []*RpcNodeInfo, error){
 
 func (ckbClient *CkbClient) GetPeersState() ( []*PeersState, error){
 	peers := []*PeersState{}
-	err := ckbClient.client.CallFor(peers, "get_peers_state")
+	err := ckbClient.client.CallFor(&peers, "get_peers_state")
 	if err != nil {
 		return nil, err
 	}
 	return peers, nil
 }
 
-func (ckbClient *CkbClient) GetCurrentEpoch() (*Epoch, error){
-	epoch := &Epoch{}
+func (ckbClient *CkbClient) GetCurrentEpoch() (*RpcEpoch, error){
+	epoch := &RpcEpoch{}
 	err := ckbClient.client.CallFor(epoch, "get_current_epoch")
 	if err != nil {
 		return nil, err
@@ -151,9 +158,9 @@ func (ckbClient *CkbClient) GetCurrentEpoch() (*Epoch, error){
 	return epoch, nil
 }
 
-func (ckbClient *CkbClient) GetEpochByNumber(number int) (*Epoch, error){
-	epoch := &Epoch{}
-	err := ckbClient.client.CallFor(epoch, "get_epoch_by_number", number)
+func (ckbClient *CkbClient) GetEpochByNumber(number int) (*RpcEpoch, error){
+	epoch := &RpcEpoch{}
+	err := ckbClient.client.CallFor(epoch, "get_epoch_by_number", strconv.Itoa(number))
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +175,7 @@ func (ckbClient *CkbClient) DryRunTransaction(rpcRawTransaction *RpcRawTransacti
 	return nil
 }
 
-func (ckbClient *CkbClient) DeindexLockHash(hash Hash) error{
+func (ckbClient *CkbClient) DeindexLockHash(hash *Hash) error{
 	_, err := ckbClient.client.Call("deindex_lock_hash", hash)
 	if err != nil {
 		return err
@@ -178,7 +185,7 @@ func (ckbClient *CkbClient) DeindexLockHash(hash Hash) error{
 
 func (ckbClient *CkbClient) GetLiveCellsByLockHash(hash Hash, pageNumber int, pageSize int) ( []*RpcCell, error){
 	cells := []*RpcCell{}
-	err := ckbClient.client.CallFor(cells, "get_live_cells_by_lock_hash", hash, pageNumber, pageSize)
+	err := ckbClient.client.CallFor(&cells, "get_live_cells_by_lock_hash", hash, pageNumber, pageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +203,7 @@ func (ckbClient *CkbClient) GetLockHashIndexStates() (*RpcLockHashIndexStates, e
 
 func (ckbClient *CkbClient) GetTransactionsByLockHash(hash Hash, pageNumber int, pageSize int) (*RpcTransactionByLockHash, error){
 	rpcTransactionByLockHash := &RpcTransactionByLockHash{}
-	err := ckbClient.client.CallFor(rpcTransactionByLockHash, "get_transactions_by_lock_hash", hash, pageNumber, pageSize)
+	err := ckbClient.client.CallFor(rpcTransactionByLockHash, "get_transactions_by_lock_hash", hash, strconv.Itoa(pageNumber), strconv.Itoa(pageSize))
 	if err != nil {
 		return nil, err
 	}
@@ -214,16 +221,16 @@ func (ckbClient *CkbClient) IndexLockHash(hash Hash) (*RpcLockHashIndexState, er
 
 func (ckbClient *CkbClient) GetBannedAddresses() ([]*RpcBannedAddress, error){
 	rpcBannedAddress := []*RpcBannedAddress{}
-	err := ckbClient.client.CallFor(rpcBannedAddress, "get_banned_addresses")
+	err := ckbClient.client.CallFor(&rpcBannedAddress, "get_banned_addresses")
 	if err != nil {
 		return nil, err
 	}
 	return rpcBannedAddress, nil
 }
 
-func (ckbClient *CkbClient) GetHeaderByNumber(number int) ([]*RpcHeader, error){
+func (ckbClient *CkbClient) GetHeaderByNumber(number int) (*RpcHeader, error){
 	header := &RpcHeader{}
-	err := ckbClient.client.CallFor(header, " get_header_by_number", number)
+	err := ckbClient.client.CallFor(header, " get_header_by_number", strconv.Itoa(number))
 	if err != nil {
 		return nil, err
 	}
@@ -253,15 +260,14 @@ func (ckbClient *CkbClient) GetCellbaseOutputCapacityDetails(hash Hash) (*RpcCel
 
 
 
-
-
-
-
-
-
-
-
-
+func (ckbClient *CkbClient) ComputeTransactionHashMethod(rawtx *RpcRawTransaction) (Hash, error){
+    hash := Hash("")
+	err := ckbClient.client.CallFor(&hash, "compute_transaction_hash", rawtx)
+	if err != nil {
+		return "", err
+	}
+	return hash, nil
+}
 
 
 
