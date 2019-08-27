@@ -46,7 +46,7 @@ type RpcRawTransaction struct {
 	Header_deps  []Hash256
 	Inputs       []RpcCellInput
 	Outputs      []RpcCellOutput
-	Witnesses    []Witness
+	//Witnesses    []Witness
 	Outputs_data []Bytes
 }
 

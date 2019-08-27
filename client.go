@@ -1,6 +1,7 @@
 package ckb_sdk_go
 
 import (
+	"encoding/json"
 	"github.com/ybbus/jsonrpc"
 	"strconv"
 )
@@ -262,7 +263,7 @@ func (ckbClient *CkbClient) GetCellbaseOutputCapacityDetails(hash Hash) (*RpcCel
 
 func (ckbClient *CkbClient) ComputeTransactionHashMethod(rawtx *RpcRawTransaction) (Hash, error){
     hash := Hash("")
-	err := ckbClient.client.CallFor(&hash, "compute_transaction_hash", rawtx)
+	err := ckbClient.client.CallFor(&hash, "_compute_transaction_hash",rawtx)
 	if err != nil {
 		return "", err
 	}
