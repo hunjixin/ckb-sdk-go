@@ -265,3 +265,163 @@ pub struct PeerState {
     // blocks count has request but not receive response yet
     blocks_in_flight: Unsigned,
 }
+
+pub trait AlertRpc {
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"send_alert","params": [{}]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "send_alert")]
+    fn send_alert(&self, _alert: Alert) -> Result<()>;
+}
+
+pub trait ChainRpc {
+    #[rpc(name = "get_block")]
+    fn get_block(&self, _hash: H256) -> Result<Option<BlockView>>;
+
+    #[rpc(name = "get_block_by_number")]
+    fn get_block_by_number(&self, _number: BlockNumber) -> Result<Option<BlockView>>;
+
+    #[rpc(name = "get_header")]
+    fn get_header(&self, _hash: H256) -> Result<Option<HeaderView>>;
+
+    #[rpc(name = "get_header_by_number")]
+    fn get_header_by_number(&self, _number: BlockNumber) -> Result<Option<HeaderView>>;
+
+    #[rpc(name = "get_transaction")]
+    fn get_transaction(&self, _hash: H256) -> Result<Option<TransactionWithStatus>>;
+
+    #[rpc(name = "get_block_hash")]
+    fn get_block_hash(&self, _number: BlockNumber) -> Result<Option<H256>>;
+
+    #[rpc(name = "get_tip_header")]
+    fn get_tip_header(&self) -> Result<HeaderView>;
+
+    #[rpc(name = "get_cells_by_lock_hash")]
+    fn get_cells_by_lock_hash(
+        &self,
+        _lock_hash: H256,
+        _from: BlockNumber,
+        _to: BlockNumber,
+    ) -> Result<Vec<CellOutputWithOutPoint>>;
+
+    #[rpc(name = "get_live_cell")]
+    fn get_live_cell(&self, _out_point: OutPoint) -> Result<CellWithStatus>;
+
+    #[rpc(name = "get_tip_block_number")]
+    fn get_tip_block_number(&self) -> Result<BlockNumber>;
+
+    #[rpc(name = "get_current_epoch")]
+    fn get_current_epoch(&self) -> Result<EpochView>;
+
+    #[rpc(name = "get_epoch_by_number")]
+    fn get_epoch_by_number(&self, number: EpochNumber) -> Result<Option<EpochView>>;
+
+    #[rpc(name = "get_cellbase_output_capacity_details")]
+    fn get_cellbase_output_capacity_details(&self, _hash: H256) -> Result<Option<BlockRewardView>>;
+}
+
+pub trait ExperimentRpc {
+    #[rpc(name = "_compute_transaction_hash")]
+    fn compute_transaction_hash(&self, tx: Transaction) -> Result<H256>;
+
+    #[rpc(name = "_compute_script_hash")]
+    fn compute_script_hash(&self, script: Script) -> Result<H256>;
+
+    #[rpc(name = "dry_run_transaction")]
+    fn dry_run_transaction(&self, _tx: Transaction) -> Result<DryRunResult>;
+
+    // Calculate the maximum withdraw one can get, given a referenced DAO cell,
+    // and a withdraw block hash
+    #[rpc(name = "calculate_dao_maximum_withdraw")]
+    fn calculate_dao_maximum_withdraw(&self, _out_point: OutPoint, _hash: H256)
+        -> Result<Capacity>;
+}
+
+pub trait IndexerRpc {
+    #[rpc(name = "get_live_cells_by_lock_hash")]
+    fn get_live_cells_by_lock_hash(
+        &self,
+        _lock_hash: H256,
+        _page: Unsigned,
+        _per_page: Unsigned,
+        _reverse_order: Option<bool>,
+    ) -> Result<Vec<LiveCell>>;
+
+    #[rpc(name = "get_transactions_by_lock_hash")]
+    fn get_transactions_by_lock_hash(
+        &self,
+        _lock_hash: H256,
+        _page: Unsigned,
+        _per_page: Unsigned,
+        _reverse_order: Option<bool>,
+    ) -> Result<Vec<CellTransaction>>;
+
+    #[rpc(name = "index_lock_hash")]
+    fn index_lock_hash(
+        &self,
+        _lock_hash: H256,
+        _index_from: Option<BlockNumber>,
+    ) -> Result<LockHashIndexState>;
+
+    #[rpc(name = "deindex_lock_hash")]
+    fn deindex_lock_hash(&self, _lock_hash: H256) -> Result<()>;
+
+    #[rpc(name = "get_lock_hash_index_states")]
+    fn get_lock_hash_index_states(&self) -> Result<Vec<LockHashIndexState>>;
+}
+
+pub trait MinerRpc {
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"get_block_template","params": ["0x1b1c832d02fdb4339f9868c8a8636c3d9dd10bd53ac7ce99595825bd6beeffb3", 1000, 1000]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "get_block_template")]
+    fn get_block_template(
+        &self,
+        bytes_limit: Option<Unsigned>,
+        proposals_limit: Option<Unsigned>,
+        max_version: Option<Version>,
+    ) -> Result<BlockTemplate>;
+
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"submit_block","params": [{"header":{}, "uncles":[], "transactions":[], "proposals":[]}]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "submit_block")]
+    fn submit_block(&self, _work_id: String, _data: Block) -> Result<Option<H256>>;
+}
+
+pub trait NetworkRpc {
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"local_node_info","params": []}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "local_node_info")]
+    fn local_node_info(&self) -> Result<Node>;
+
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"get_peers","params": []}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "get_peers")]
+    fn get_peers(&self) -> Result<Vec<Node>>;
+
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"get_banned_addresses","params": []}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "get_banned_addresses")]
+    fn get_banned_addresses(&self) -> Result<Vec<BannedAddress>>;
+
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"set_ban","params": ["192.168.0.0/24", "insert"]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "set_ban")]
+    fn set_ban(
+        &self,
+        address: String,
+        command: String,
+        ban_time: Option<Timestamp>,
+        absolute: Option<bool>,
+        reason: Option<String>,
+    ) -> Result<()>;
+}
+
+pub trait PoolRpc {
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"send_transaction","params": [{"version":2, "deps":[], "inputs":[], "outputs":[]}]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "send_transaction")]
+    fn send_transaction(&self, _tx: Transaction) -> Result<H256>;
+
+    // curl -d '{"params": [], "method": "tx_pool_info", "jsonrpc": "2.0", "id": 2}' -H 'content-type:application/json' http://localhost:8114
+    #[rpc(name = "tx_pool_info")]
+    fn tx_pool_info(&self) -> Result<TxPoolInfo>;
+}
+
+pub trait StatsRpc {
+    #[rpc(name = "get_blockchain_info")]
+    fn get_blockchain_info(&self) -> Result<ChainInfo>;
+
+    #[rpc(name = "get_peers_state")]
+    fn get_peers_state(&self) -> Result<Vec<PeerState>>;
+}
