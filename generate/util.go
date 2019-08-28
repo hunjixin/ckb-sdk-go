@@ -1,6 +1,8 @@
 package main
 
-import "strings"
+import (
+	"strings"
+)
 
 func Capitalize(str string) string {
 	var upperStr string

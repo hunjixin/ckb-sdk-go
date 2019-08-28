@@ -1,278 +1,379 @@
 package ckb_sdk_go
 
 import (
-	"encoding/json"
 	"github.com/ybbus/jsonrpc"
-	"strconv"
 )
 
 type CkbClient struct {
-	url string
+	url    string
 	client jsonrpc.RPCClient
 }
 
-func NewCkbClient(url string) *CkbClient {
-	client := jsonrpc.NewClient(url)
-	return &CkbClient{
-		url:url,
-		client:client,
-	}
-}
+func (ckbClient *CkbClient) SendAlert(_alert RpcAlert) error {
+	res, err := ckbClient.client.Call("send_alert", _alert)
 
-
-func (ckbClient *CkbClient)  GetBlockByNumber(number int) (*RpcBlock, error){
-	rpcBlock := &RpcBlock{}
-	err := ckbClient.client.CallFor(rpcBlock, "get_block_by_number", strconv.Itoa(number))
-	if err != nil {
-		return nil, err
-	}
-	return rpcBlock, nil
-}
-
-func (ckbClient *CkbClient)  GetBlock(hash Hash) (*RpcBlock, error){
-	rpcBlock := &RpcBlock{}
-	err := ckbClient.client.CallFor(rpcBlock, "get_block", hash)
-	if err != nil {
-		return nil, err
-	}
-	return rpcBlock, nil
-}
-
-func (ckbClient *CkbClient)  GetTransaction(hash Hash) (*RpcTransaction, error){
-	rpcTx := &RpcTransaction{}
-	err := ckbClient.client.CallFor(rpcTx, "get_transaction", hash)
-	if err != nil {
-		return nil, err
-	}
-	return rpcTx, nil
-}
-
-func (ckbClient *CkbClient) GetBlockHash(number int) (Hash, error){
-	hash := ""
-	err := ckbClient.client.CallFor(&hash, "get_block_hash", number)
-	if err != nil {
-		return "", err
-	}
-	return hash, nil
-}
-
-func (ckbClient *CkbClient) GetTipHeader() (*RpcHeader, error){
-    tipHeader := &RpcHeader{}
-	err := ckbClient.client.CallFor(tipHeader, "get_tip_header")
-	if err != nil {
-		return nil, err
-	}
-	return tipHeader, nil
-}
-
-func (ckbClient *CkbClient) GetCellsByLockHash() ([]*RpcCell, error){
-	cell := []*RpcCell{}
-	err := ckbClient.client.CallFor(&cell, "get_cells_by_lock_hash")
-	if err != nil {
-		return nil, err
-	}
-	return cell, nil
-}
-
-func (ckbClient *CkbClient) GetLiveCell(hash *Hash, rpcPoint *RpcOutPoint) (*RpcCellWithStatus, error){
-	cell := &RpcCellWithStatus{}
-	err := ckbClient.client.CallFor(cell, "get_live_cell", hash, rpcPoint)
-	if err != nil {
-		return nil, err
-	}
-	return cell, nil
-}
-
-func (ckbClient *CkbClient) GetTipBlockNumber() (int, error){
-	blockNumber := ""
-	err := ckbClient.client.CallFor(&blockNumber, "get_tip_block_number")
-	if err != nil {
-		return -1, err
-	}
-	num, err := strconv.Atoi(blockNumber)
-	if err != nil {
-		return -1, err
-	}
-	return num, nil
-}
-
-func (ckbClient *CkbClient) GetBlockchainInfo() (*RpcBlockchainInfo, error){
-	blockChainInfo := &RpcBlockchainInfo{}
-	err := ckbClient.client.CallFor(blockChainInfo, "get_blockchain_info")
-	if err != nil {
-		return nil, err
-	}
-	return blockChainInfo, nil
-}
-
-func (ckbClient *CkbClient) SendTransaction(transaction *RawTransaction) (*Hash, error){
-	hash := Hash("")
-	err := ckbClient.client.CallFor(&hash, "send_transaction", transaction)
-	if err != nil {
-		return nil, err
-	}
-	return &hash, nil
-}
-
-func (ckbClient *CkbClient) LocalNodeInfo() (*RpcNodeInfo, error){
-	nodeInfo := &RpcNodeInfo{}
-	err := ckbClient.client.CallFor(nodeInfo, "local_node_info")
-	if err != nil {
-		return nil, err
-	}
-	return nodeInfo, nil
-}
-
-func (ckbClient *CkbClient) TxPoolInfo() (*RpcTxPoolInfo, error){
-	poolInfo := &RpcTxPoolInfo{}
-	err := ckbClient.client.CallFor(poolInfo, "tx_pool_info")
-	if err != nil {
-		return nil, err
-	}
-	return poolInfo, nil
-}
-
-func (ckbClient *CkbClient) GetPeers() ( []*RpcNodeInfo, error){
-	peers := []*RpcNodeInfo{}
-	err := ckbClient.client.CallFor(&peers, "get_peers")
-	if err != nil {
-		return nil, err
-	}
-	return peers, nil
-}
-
-func (ckbClient *CkbClient) GetPeersState() ( []*PeersState, error){
-	peers := []*PeersState{}
-	err := ckbClient.client.CallFor(&peers, "get_peers_state")
-	if err != nil {
-		return nil, err
-	}
-	return peers, nil
-}
-
-func (ckbClient *CkbClient) GetCurrentEpoch() (*RpcEpoch, error){
-	epoch := &RpcEpoch{}
-	err := ckbClient.client.CallFor(epoch, "get_current_epoch")
-	if err != nil {
-		return nil, err
-	}
-	return epoch, nil
-}
-
-func (ckbClient *CkbClient) GetEpochByNumber(number int) (*RpcEpoch, error){
-	epoch := &RpcEpoch{}
-	err := ckbClient.client.CallFor(epoch, "get_epoch_by_number", strconv.Itoa(number))
-	if err != nil {
-		return nil, err
-	}
-	return epoch, nil
-}
-
-func (ckbClient *CkbClient) DryRunTransaction(rpcRawTransaction *RpcRawTransaction) error{
-	_, err := ckbClient.client.Call("dry_run_transaction", rpcRawTransaction)
-	if err != nil {
-		return  err
-	}
-	return nil
-}
-
-func (ckbClient *CkbClient) DeindexLockHash(hash *Hash) error{
-	_, err := ckbClient.client.Call("deindex_lock_hash", hash)
 	if err != nil {
 		return err
 	}
+	if res.Error != nil {
+		return res.Error
+	}
 	return nil
+
 }
 
-func (ckbClient *CkbClient) GetLiveCellsByLockHash(hash Hash, pageNumber int, pageSize int) ( []*RpcCell, error){
-	cells := []*RpcCell{}
-	err := ckbClient.client.CallFor(&cells, "get_live_cells_by_lock_hash", hash, pageNumber, pageSize)
+func (ckbClient *CkbClient) GetBlock(_hash string) (*RpcBlockView, error) {
+	rpcblockview := &RpcBlockView{}
+	err := ckbClient.client.CallFor(rpcblockview, "get_block", _hash)
+
 	if err != nil {
 		return nil, err
 	}
-	return cells, nil
+	return rpcblockview, nil
+
 }
 
-func (ckbClient *CkbClient) GetLockHashIndexStates() (*RpcLockHashIndexStates, error){
-	rpcLockHashIndexStates := &RpcLockHashIndexStates{}
-	err := ckbClient.client.CallFor(rpcLockHashIndexStates, "get_lock_hash_index_states")
+func (ckbClient *CkbClient) GetBlockByNumber(_number string) (*RpcBlockView, error) {
+	rpcblockview := &RpcBlockView{}
+	err := ckbClient.client.CallFor(rpcblockview, "get_block_by_number", _number)
+
 	if err != nil {
 		return nil, err
 	}
-	return rpcLockHashIndexStates, nil
+	return rpcblockview, nil
+
 }
 
-func (ckbClient *CkbClient) GetTransactionsByLockHash(hash Hash, pageNumber int, pageSize int) (*RpcTransactionByLockHash, error){
-	rpcTransactionByLockHash := &RpcTransactionByLockHash{}
-	err := ckbClient.client.CallFor(rpcTransactionByLockHash, "get_transactions_by_lock_hash", hash, strconv.Itoa(pageNumber), strconv.Itoa(pageSize))
+func (ckbClient *CkbClient) GetHeader(_hash string) (*RpcHeaderView, error) {
+	rpcheaderview := &RpcHeaderView{}
+	err := ckbClient.client.CallFor(rpcheaderview, "get_header", _hash)
+
 	if err != nil {
 		return nil, err
 	}
-	return rpcTransactionByLockHash, nil
+	return rpcheaderview, nil
+
 }
 
-func (ckbClient *CkbClient) IndexLockHash(hash Hash) (*RpcLockHashIndexState, error){
-	rpcLockHashIndexState := &RpcLockHashIndexState{}
-	err := ckbClient.client.CallFor(rpcLockHashIndexState, "index_lock_hash", hash)
+func (ckbClient *CkbClient) GetHeaderByNumber(_number string) (*RpcHeaderView, error) {
+	rpcheaderview := &RpcHeaderView{}
+	err := ckbClient.client.CallFor(rpcheaderview, "get_header_by_number", _number)
+
 	if err != nil {
 		return nil, err
 	}
-	return rpcLockHashIndexState, nil
+	return rpcheaderview, nil
+
 }
 
-func (ckbClient *CkbClient) GetBannedAddresses() ([]*RpcBannedAddress, error){
-	rpcBannedAddress := []*RpcBannedAddress{}
-	err := ckbClient.client.CallFor(&rpcBannedAddress, "get_banned_addresses")
+func (ckbClient *CkbClient) GetTransaction(_hash string) (*RpcTransactionWithStatus, error) {
+	rpctransactionwithstatus := &RpcTransactionWithStatus{}
+	err := ckbClient.client.CallFor(rpctransactionwithstatus, "get_transaction", _hash)
+
 	if err != nil {
 		return nil, err
 	}
-	return rpcBannedAddress, nil
+	return rpctransactionwithstatus, nil
+
 }
 
-func (ckbClient *CkbClient) GetHeaderByNumber(number int) (*RpcHeader, error){
-	header := &RpcHeader{}
-	err := ckbClient.client.CallFor(header, " get_header_by_number", strconv.Itoa(number))
+func (ckbClient *CkbClient) GetBlockHash(_number string) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "get_block_hash", _number)
+
 	if err != nil {
 		return nil, err
 	}
-	return header, nil
+	return &string, nil
+
 }
 
-func (ckbClient *CkbClient) GetHeader(hash Hash) (*RpcHeader, error){
-	header := &RpcHeader{}
-	err := ckbClient.client.CallFor(header, "get_header", hash)
+func (ckbClient *CkbClient) GetTipHeader() (*RpcHeaderView, error) {
+	rpcheaderview := &RpcHeaderView{}
+	err := ckbClient.client.CallFor(rpcheaderview, "get_tip_header")
+
 	if err != nil {
 		return nil, err
 	}
-	return header, nil
+	return rpcheaderview, nil
+
 }
 
+func (ckbClient *CkbClient) GetCellsByLockHash(_lock_hash string, _from string, _to string) (*RpcCellOutputWithOutPoint, error) {
+	rpccelloutputwithoutpoint := &RpcCellOutputWithOutPoint{}
+	err := ckbClient.client.CallFor(rpccelloutputwithoutpoint, "get_cells_by_lock_hash", _lock_hash, _from, _to)
 
-
-func (ckbClient *CkbClient) GetCellbaseOutputCapacityDetails(hash Hash) (*RpcCellbaseOutputCapacityDetails, error){
-	rpcCellbaseOutputCapacityDetails := &RpcCellbaseOutputCapacityDetails{}
-	err := ckbClient.client.CallFor(rpcCellbaseOutputCapacityDetails, "get_cellbase_output_capacity_details", hash)
 	if err != nil {
 		return nil, err
 	}
-	return rpcCellbaseOutputCapacityDetails, nil
+	return rpccelloutputwithoutpoint, nil
+
 }
 
+func (ckbClient *CkbClient) GetLiveCell(_out_point RpcOutPoint) (*RpcCellWithStatus, error) {
+	rpccellwithstatus := &RpcCellWithStatus{}
+	err := ckbClient.client.CallFor(rpccellwithstatus, "get_live_cell", _out_point)
 
-
-
-func (ckbClient *CkbClient) ComputeTransactionHashMethod(rawtx *RpcRawTransaction) (Hash, error){
-    hash := Hash("")
-	err := ckbClient.client.CallFor(&hash, "_compute_transaction_hash",rawtx)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return hash, nil
+	return rpccellwithstatus, nil
+
 }
 
+func (ckbClient *CkbClient) GetTipBlockNumber() (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "get_tip_block_number")
 
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
 
+}
 
+func (ckbClient *CkbClient) GetCurrentEpoch() (*RpcEpochView, error) {
+	rpcepochview := &RpcEpochView{}
+	err := ckbClient.client.CallFor(rpcepochview, "get_current_epoch")
 
+	if err != nil {
+		return nil, err
+	}
+	return rpcepochview, nil
 
+}
 
+func (ckbClient *CkbClient) GetEpochByNumber(number string) (*RpcEpochView, error) {
+	rpcepochview := &RpcEpochView{}
+	err := ckbClient.client.CallFor(rpcepochview, "get_epoch_by_number", number)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcepochview, nil
+
+}
+
+func (ckbClient *CkbClient) GetCellbaseOutputCapacityDetails(_hash string) (*RpcBlockRewardView, error) {
+	rpcblockrewardview := &RpcBlockRewardView{}
+	err := ckbClient.client.CallFor(rpcblockrewardview, "get_cellbase_output_capacity_details", _hash)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcblockrewardview, nil
+
+}
+
+func (ckbClient *CkbClient) ComputeTransactionHash(tx RpcTransaction) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "_compute_transaction_hash", tx)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
+
+}
+
+func (ckbClient *CkbClient) ComputeScriptHash(script RpcScript) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "_compute_script_hash", script)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
+
+}
+
+func (ckbClient *CkbClient) DryRunTransaction(_tx RpcTransaction) (*RpcDryRunResult, error) {
+	rpcdryrunresult := &RpcDryRunResult{}
+	err := ckbClient.client.CallFor(rpcdryrunresult, "dry_run_transaction", _tx)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcdryrunresult, nil
+
+}
+
+func (ckbClient *CkbClient) CalculateDaoMaximumWithdraw(_out_point RpcOutPoint, _hash string) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "calculate_dao_maximum_withdraw", _out_point, _hash)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
+
+}
+
+func (ckbClient *CkbClient) GetLiveCellsByLockHash(_lock_hash string, _page string, _per_page string, _reverse_order *bool) (*RpcLiveCell, error) {
+	rpclivecell := &RpcLiveCell{}
+	err := ckbClient.client.CallFor(rpclivecell, "get_live_cells_by_lock_hash", _lock_hash, _page, _per_page, _reverse_order)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpclivecell, nil
+
+}
+
+func (ckbClient *CkbClient) GetTransactionsByLockHash(_lock_hash string, _page string, _per_page string, _reverse_order *bool) (*RpcCellTransaction, error) {
+	rpccelltransaction := &RpcCellTransaction{}
+	err := ckbClient.client.CallFor(rpccelltransaction, "get_transactions_by_lock_hash", _lock_hash, _page, _per_page, _reverse_order)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpccelltransaction, nil
+
+}
+
+func (ckbClient *CkbClient) IndexLockHash(_lock_hash string, _index_from *string) (*RpcLockHashIndexState, error) {
+	rpclockhashindexstate := &RpcLockHashIndexState{}
+	err := ckbClient.client.CallFor(rpclockhashindexstate, "index_lock_hash", _lock_hash, _index_from)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpclockhashindexstate, nil
+
+}
+
+func (ckbClient *CkbClient) DeindexLockHash(_lock_hash string) error {
+	res, err := ckbClient.client.Call("deindex_lock_hash", _lock_hash)
+
+	if err != nil {
+		return err
+	}
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+
+}
+
+func (ckbClient *CkbClient) GetLockHashIndexStates() (*RpcLockHashIndexState, error) {
+	rpclockhashindexstate := &RpcLockHashIndexState{}
+	err := ckbClient.client.CallFor(rpclockhashindexstate, "get_lock_hash_index_states")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpclockhashindexstate, nil
+
+}
+
+func (ckbClient *CkbClient) GetBlockTemplate(bytes_limit *string, proposals_limit *string, max_version *string) (*RpcBlockTemplate, error) {
+	rpcblocktemplate := &RpcBlockTemplate{}
+	err := ckbClient.client.CallFor(rpcblocktemplate, "get_block_template", bytes_limit, proposals_limit, max_version)
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcblocktemplate, nil
+
+}
+
+func (ckbClient *CkbClient) SubmitBlock(_work_id string, _data RpcBlock) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "submit_block", _work_id, _data)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
+
+}
+
+func (ckbClient *CkbClient) LocalNodeInfo() (*RpcNode, error) {
+	rpcnode := &RpcNode{}
+	err := ckbClient.client.CallFor(rpcnode, "local_node_info")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcnode, nil
+
+}
+
+func (ckbClient *CkbClient) GetPeers() (*RpcNode, error) {
+	rpcnode := &RpcNode{}
+	err := ckbClient.client.CallFor(rpcnode, "get_peers")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcnode, nil
+
+}
+
+func (ckbClient *CkbClient) GetBannedAddresses() (*RpcBannedAddress, error) {
+	rpcbannedaddress := &RpcBannedAddress{}
+	err := ckbClient.client.CallFor(rpcbannedaddress, "get_banned_addresses")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcbannedaddress, nil
+
+}
+
+func (ckbClient *CkbClient) SetBan(address string, command string, ban_time *string, absolute *bool, reason *string) error {
+	res, err := ckbClient.client.Call("set_ban", address, command, ban_time, absolute, reason)
+
+	if err != nil {
+		return err
+	}
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+
+}
+
+func (ckbClient *CkbClient) SendTransaction(_tx RpcTransaction) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "send_transaction", _tx)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
+
+}
+
+func (ckbClient *CkbClient) TxPoolInfo() (*RpcTxPoolInfo, error) {
+	rpctxpoolinfo := &RpcTxPoolInfo{}
+	err := ckbClient.client.CallFor(rpctxpoolinfo, "tx_pool_info")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpctxpoolinfo, nil
+
+}
+
+func (ckbClient *CkbClient) GetBlockchainInfo() (*RpcChainInfo, error) {
+	rpcchaininfo := &RpcChainInfo{}
+	err := ckbClient.client.CallFor(rpcchaininfo, "get_blockchain_info")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcchaininfo, nil
+
+}
+
+func (ckbClient *CkbClient) GetPeersState() (*RpcPeerState, error) {
+	rpcpeerstate := &RpcPeerState{}
+	err := ckbClient.client.CallFor(rpcpeerstate, "get_peers_state")
+
+	if err != nil {
+		return nil, err
+	}
+	return rpcpeerstate, nil
+
+}
