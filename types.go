@@ -89,7 +89,7 @@ type CellOutput struct {
 	Lock     Script
 	Type_    *Script
 }
-
+CellOutput
 var TCellOutPoint = reflect.TypeOf(CellOutPoint{})
 
 type CellOutPoint struct {
@@ -113,9 +113,6 @@ type CellInput struct {
 
 var TWitness = reflect.TypeOf(Witness{})
 
-type Witness struct {
-	data [][]byte
-}
 
 var TTransaction = reflect.TypeOf(Transaction{})
 
