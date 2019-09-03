@@ -89,7 +89,6 @@ type CellOutput struct {
 	Lock     Script
 	Type_    *Script
 }
-CellOutput
 var TCellOutPoint = reflect.TypeOf(CellOutPoint{})
 
 type CellOutPoint struct {

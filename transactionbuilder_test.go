@@ -26,8 +26,10 @@ func Test_TxHash(t *testing.T) {
 	}).
 	AppendWitness([][]byte{[]byte{7, 8, 9}}).
 	Build()
+
 	expected := "6e9d9e6a6d5be5adafe7eac9f159b439cf4a4a400400cf98c231a341eb318bc2"
-	hashStr := hex.EncodeToString(builder.TxHash()[:])
+	hash := builder.TxHash()
+	hashStr := hex.EncodeToString(hash[:])
 	if hashStr != expected {
 		t.Errorf("expect %s but got %s", expected, hashStr)
 	}

@@ -127,11 +127,15 @@ func(binCode *BinCodeSerizlize) ArrayBytes(b reflect.Value) error{
 	return binCode.SliceBytes(sliceBytes)
 }
 func(binCode *BinCodeSerizlize) SliceBytes(b reflect.Value) error{
-	len :=  b.Len()
-	binCode.Uint64(reflect.ValueOf(uint64(len)))
-	binCode.Grow(len)
-	copy(binCode.bytes[binCode.offset:],b.Bytes())
-	binCode.offset = binCode.offset+len
+	if b.IsNil() {
+		binCode.Uint64(reflect.ValueOf(uint64(0)))
+	}else{
+		len :=  b.Len()
+		binCode.Uint64(reflect.ValueOf(uint64(len)))
+		binCode.Grow(len)
+		copy(binCode.bytes[binCode.offset:],b.Bytes())
+		binCode.offset = binCode.offset+len
+	}
 	return nil
 }
 
@@ -148,12 +152,16 @@ func(binCode *BinCodeSerizlize) Array(b reflect.Value) error{
 }
 
 func(binCode *BinCodeSerizlize) Slice(b  reflect.Value) error{
-	len := b.Len()
-	binCode.Uint64(reflect.ValueOf(uint64(len)))
-	for i:=0;i<len;i++{
-		err:= binCode.Marshal(b.Index(i))
-		if err != nil {
-			return err
+	if b.IsNil() {
+		binCode.Uint64(reflect.ValueOf(uint64(0)))
+	}else{
+		len := b.Len()
+		binCode.Uint64(reflect.ValueOf(uint64(len)))
+		for i:=0;i<len;i++{
+			err:= binCode.Marshal(b.Index(i))
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -208,9 +216,11 @@ func(binCode *BinCodeSerizlize) Marshal(a reflect.Value) error{
 	case reflect.Struct:
 		err = binCode.Struct(a)
 	case reflect.Ptr:
-		err = binCode.Bool(a)
 		if !a.IsValid() {
+			err = binCode.Bool(reflect.ValueOf(true))
 			err = binCode.Marshal(a.Elem())
+		}else{
+			err = binCode.Bool(reflect.ValueOf(true))
 		}
 	default:
 		err = errors.New("not supprot type")

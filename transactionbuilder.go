@@ -66,7 +66,8 @@ func (builder *TransactionBuilder) AppendWitness(witness Witness) *TransactionBu
 }
 
 func (builder *TransactionBuilder) ClearWitness() *TransactionBuilder{
-	//state.write(self.witness_hash().as_fixed_bytes())
+	builder.Witnesses = nil
+	return builder
 }
 
 
@@ -77,11 +78,6 @@ type RawTransaction struct{
 	Outputs []CellOutput
 }
 
-
-func (builder *TransactionBuilder) Hash() []byte{
-	builder.Witnesses = []Witness{}
-	return builder
-}
 
 func  (builder *TransactionBuilder)Build() Transaction {
 	return Transaction{
@@ -104,7 +100,7 @@ func (tx *Transaction)  TxHash() [32]byte {
 	hashBytes := blake2b.Sum256(bytes)
 	return hashBytes
 }
-func (tx *Transaction)  WitnessHash() [32]byte {
+func (tx *Transaction) WitnessHash() [32]byte {
 	bytes, _ := Marshal(tx)
 	hashBytes := blake2b.Sum256(bytes)
 	return hashBytes
@@ -115,7 +111,7 @@ func (tx *Transaction)  WitnessHash() [32]byte {
 func sign(tx TransactionBuilder, priv *secp256k1.PrivateKey) Transaction {
 
 	raw := tx.Build()
-	data := []byte{}
+	data, _ := Marshal(raw)
 	hash := blake2b.Sum256(data)
 	sig, _  := priv.Sign(hash[:])
 
