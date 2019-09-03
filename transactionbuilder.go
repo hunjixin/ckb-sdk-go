@@ -1,11 +1,32 @@
 package ckb_sdk_go
 
 import (
+	"encoding/hex"
+	"fmt"
 	"github.com/decred/dcrd/dcrec/secp256k1"
 	"github.com/dchest/blake2b"
-	)
+	"reflect"
+)
 
 type Witness [][]byte
+type H256 string
+type U256 string
+type Marshaler interface {
+	Marshal(binCode *BinCodeSerizlize, val reflect.Value) error
+}
+
+type UnMarshaler interface {
+	UnMarshal(binCode *BinCodeDeSerizlize) (reflect.Value,error)
+}
+
+func (_ H256) UnMarshal(binCode *BinCodeDeSerizlize) (reflect.Value,error) {
+	strBytes, err := binCode.SliceBytes()
+	if err != nil {
+		return reflect.ValueOf(nil), err
+	}
+	h256Val := H256(string(strBytes.Bytes()))
+	return reflect.ValueOf(h256Val), nil
+}
 
 type  TransactionBuilder struct {
 	Version uint32
@@ -97,6 +118,11 @@ func (tx *Transaction)  TxHash() [32]byte {
 		Outputs:tx.Outputs,
 	}
 	bytes, _ := Marshal(rawTx)
+	str := "170000000000000000000000010000000000000001420000000000000030783030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303000000000007B0000000000000001000000000000000088526A740000000300000000000000010203000000000000000042000000000000003078303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030300000000000"
+	bytes222, _ := hex.DecodeString(str)
+	t := reflect.TypeOf(RawTransaction{})
+	dddd, _ := UnMarshal(bytes222, t)
+	fmt.Println(dddd)
 	hashBytes := blake2b.Sum256(bytes)
 	return hashBytes
 }

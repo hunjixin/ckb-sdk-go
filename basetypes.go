@@ -9,19 +9,26 @@ const (
 	Committed Status = "committed"
 )
 
-type ScriptHashType string
+type RpcScriptHashType string
 
 const (
-	Data ScriptHashType = "data"
-	Type ScriptHashType = "type"
+	RpcData RpcScriptHashType = "data"
+	RpcType RpcScriptHashType = "type"
+)
+
+type ScriptHashType uint8
+
+const (
+	Data ScriptHashType = 0
+	Type ScriptHashType = 1
 )
 
 type DepType string
 
-const (
+/*const (
 	Code     ScriptHashType = "code"
 	DepGroup ScriptHashType = "depGroup"
-)
+)*/
 
 type CellStatus string
 

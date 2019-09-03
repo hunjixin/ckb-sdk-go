@@ -17,7 +17,7 @@ func Test_TxHash(t *testing.T) {
 		Previous_output:OutPoint{
 			Block_hash:nil,
 			Cell: &CellOutPoint{
-				Tx_hash: [32]byte{},
+				Tx_hash: "01",
 				Index:0,
 			},
 

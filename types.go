@@ -30,11 +30,11 @@ var TBlockTemplate = reflect.TypeOf(BlockTemplate{})
 
 type BlockTemplate struct {
 	Version            uint32
-	Difficulty         [32]byte
+	Difficulty         U256
 	Current_time       uint64
 	Number             uint64
 	Epoch              uint64
-	Parent_hash        [32]byte
+	Parent_hash        H256
 	Cycles_limit       uint64
 	Bytes_limit        uint64
 	Uncles_count_limit uint64
@@ -49,7 +49,7 @@ type BlockTemplate struct {
 var TUncleTemplate = reflect.TypeOf(UncleTemplate{})
 
 type UncleTemplate struct {
-	Hash      [32]byte
+	Hash      H256
 	Required  bool
 	Proposals [][10]byte
 	Header    Header
@@ -58,7 +58,7 @@ type UncleTemplate struct {
 var TCellbaseTemplate = reflect.TypeOf(CellbaseTemplate{})
 
 type CellbaseTemplate struct {
-	Hash   [32]byte
+	Hash   H256
 	Cycles *uint64
 	Data   Transaction
 }
@@ -66,7 +66,7 @@ type CellbaseTemplate struct {
 var TTransactionTemplate = reflect.TypeOf(TransactionTemplate{})
 
 type TransactionTemplate struct {
-	Hash     [32]byte
+	Hash     H256
 	Required bool
 	Cycles   *uint64
 	Depends  *[]uint64
@@ -77,7 +77,7 @@ var TScript = reflect.TypeOf(Script{})
 
 type Script struct {
 	Args      [][]byte
-	Code_hash [32]byte
+	Code_hash H256
 	Hash_type ScriptHashType
 }
 
@@ -89,18 +89,19 @@ type CellOutput struct {
 	Lock     Script
 	Type_    *Script
 }
+
 var TCellOutPoint = reflect.TypeOf(CellOutPoint{})
 
 type CellOutPoint struct {
-	Tx_hash [32]byte
-	Index   uint64
+	Tx_hash H256
+	Index   uint32
 }
 
 var TOutPoint = reflect.TypeOf(OutPoint{})
 
 type OutPoint struct {
 	Cell       *CellOutPoint
-	Block_hash *[32]byte
+	Block_hash *H256
 }
 
 var TCellInput = reflect.TypeOf(CellInput{})
@@ -111,7 +112,6 @@ type CellInput struct {
 }
 
 var TWitness = reflect.TypeOf(Witness{})
-
 
 var TTransaction = reflect.TypeOf(Transaction{})
 
@@ -127,7 +127,7 @@ var TTransactionView = reflect.TypeOf(TransactionView{})
 
 type TransactionView struct {
 	Inner Transaction
-	Hash  [32]byte
+	Hash  H256
 }
 
 var TTransactionWithStatus = reflect.TypeOf(TransactionWithStatus{})
@@ -141,7 +141,7 @@ var TTxStatus = reflect.TypeOf(TxStatus{})
 
 type TxStatus struct {
 	Status     Status
-	Block_hash *[32]byte
+	Block_hash *H256
 }
 
 var TSeal = reflect.TypeOf(Seal{})
@@ -155,15 +155,15 @@ var THeader = reflect.TypeOf(Header{})
 
 type Header struct {
 	Version           uint32
-	Parent_hash       [32]byte
+	Parent_hash       H256
 	Timestamp         uint64
 	Number            uint64
 	Epoch             uint64
-	Transactions_root [32]byte
-	Witnesses_root    [32]byte
-	Proposals_hash    [32]byte
-	Difficulty        [32]byte
-	Uncles_hash       [32]byte
+	Transactions_root H256
+	Witnesses_root    H256
+	Proposals_hash    H256
+	Difficulty        U256
+	Uncles_hash       H256
 	Uncles_count      uint64
 	Dao               []byte
 	Seal              Seal
@@ -173,7 +173,7 @@ var THeaderView = reflect.TypeOf(HeaderView{})
 
 type HeaderView struct {
 	Inner Header
-	Hash  [32]byte
+	Hash  H256
 }
 
 var TUncleBlock = reflect.TypeOf(UncleBlock{})
@@ -215,7 +215,7 @@ type EpochView struct {
 	Epoch_reward uint64
 	Start_number uint64
 	Length       uint64
-	Difficulty   [32]byte
+	Difficulty   U256
 }
 
 var TBlockRewardView = reflect.TypeOf(BlockRewardView{})
@@ -249,7 +249,7 @@ type ChainInfo struct {
 	Chain                     string
 	Median_time               uint64
 	Epoch                     uint64
-	Difficulty                [32]byte
+	Difficulty                U256
 	Is_initial_block_download bool
 	Alerts                    []AlertMessage
 }
@@ -278,16 +278,16 @@ var TTransactionPoint = reflect.TypeOf(TransactionPoint{})
 
 type TransactionPoint struct {
 	Block_number uint64
-	Tx_hash      [32]byte
-	Index        uint64
+	Tx_hash      H256
+	Index        uint32
 }
 
 var TLockHashIndexState = reflect.TypeOf(LockHashIndexState{})
 
 type LockHashIndexState struct {
-	Lock_hash    [32]byte
+	Lock_hash    H256
 	Block_number uint64
-	Block_hash   [32]byte
+	Block_hash   H256
 }
 
 var TNode = reflect.TypeOf(Node{})
