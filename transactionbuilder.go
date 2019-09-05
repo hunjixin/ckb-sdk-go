@@ -1,16 +1,20 @@
 package ckb_sdk_go
 
 import (
+	"crypto/ecdsa"
 	"encoding/hex"
-	"fmt"
 	"github.com/decred/dcrd/dcrec/secp256k1"
-	"github.com/dchest/blake2b"
+	"github.com/ethereum/go-ethereum/crypto"
 	"reflect"
 )
 
 type Witness [][]byte
-type H256 string
+type H256 [32]byte
 type U256 string
+
+var (
+	ZeroH256 = H256{}
+)
 type Marshaler interface {
 	Marshal(binCode *BinCodeSerizlize, val reflect.Value) error
 }
@@ -18,15 +22,34 @@ type Marshaler interface {
 type UnMarshaler interface {
 	UnMarshal(binCode *BinCodeDeSerizlize) (reflect.Value,error)
 }
-
+func (h256 H256) Bytes()[]byte{
+	return h256[:]
+}
+func (h256 *H256) SetBytes(h256Bytes []byte){
+	copy(h256[:],h256Bytes)
+}
 func (_ H256) UnMarshal(binCode *BinCodeDeSerizlize) (reflect.Value,error) {
 	strBytes, err := binCode.SliceBytes()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
-	h256Val := H256(string(strBytes.Bytes()))
-	return reflect.ValueOf(h256Val), nil
+
+	hexBytes, err := hex.DecodeString(string(strBytes.Bytes()[2:]))
+	if err != nil {
+		return reflect.ValueOf(nil), err
+	}
+	h256 := [32]byte{}
+	copy(h256[:], hexBytes)
+	return reflect.ValueOf(H256(h256)), nil
 }
+
+
+func (_ H256) Marshal(binCode *BinCodeSerizlize, val reflect.Value) error{
+	hexH256 :="0x"+hex.EncodeToString(val.Interface().(H256).Bytes())
+	return binCode.SliceBytes(reflect.ValueOf([]byte(hexH256)))
+}
+
+
 
 type  TransactionBuilder struct {
 	Version uint32
@@ -110,38 +133,37 @@ func  (builder *TransactionBuilder)Build() Transaction {
 	}
 }
 
-func (tx *Transaction)  TxHash() [32]byte {
+func (tx *Transaction)  TxHash() H256 {
 	rawTx := &RawTransaction{
 		Version:tx.Version,
 		Deps: tx.Deps,
 		Inputs:tx.Inputs,
 		Outputs:tx.Outputs,
 	}
-	bytes, _ := Marshal(rawTx)
-	str := "170000000000000000000000010000000000000001420000000000000030783030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303000000000007B0000000000000001000000000000000088526A740000000300000000000000010203000000000000000042000000000000003078303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030300000000000"
-	bytes222, _ := hex.DecodeString(str)
-	t := reflect.TypeOf(RawTransaction{})
-	dddd, _ := UnMarshal(bytes222, t)
-	fmt.Println(dddd)
-	hashBytes := blake2b.Sum256(bytes)
-	return hashBytes
+	rawTxBytes, _ := Marshal(rawTx)
+	return Black256(rawTxBytes)
 }
-func (tx *Transaction) WitnessHash() [32]byte {
+
+func (tx *Transaction) WitnessHash() H256 {
 	bytes, _ := Marshal(tx)
-	hashBytes := blake2b.Sum256(bytes)
-	return hashBytes
+	return Black256(bytes)
 }
 
-
-
-func sign(tx TransactionBuilder, priv *secp256k1.PrivateKey) Transaction {
-
+func SignTx(tx TransactionBuilder, priv *secp256k1.PrivateKey) Transaction {
 	raw := tx.Build()
-	data, _ := Marshal(raw)
-	hash := blake2b.Sum256(data)
-	sig, _  := priv.Sign(hash[:])
+	txHash := raw.TxHash()
+	hashBytes := make([][]byte, len(tx.Witnesses)+1)
+	hashBytes[0] = txHash[:]
+	for index, witness := range tx.Witnesses {
+		for _, bytes := range witness {
+			index++
+			hashBytes[index] = bytes
+		}
+	}
+	hash := Black256M(hashBytes...)
+	sig, _  := crypto.Sign(hash[:], (*ecdsa.PrivateKey)(priv))
 
-	tx.AppendWitness([][]byte{sig.Serialize()})
+	tx.AppendWitness([][]byte{sig})
 	return tx.Build()
 }
 

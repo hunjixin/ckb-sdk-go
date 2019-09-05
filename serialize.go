@@ -176,55 +176,65 @@ func(binCode *BinCodeSerizlize) Null() error{
 
 func(binCode *BinCodeSerizlize) Marshal(a reflect.Value) error{
 	var err error
-	switch a.Type().Kind() {
-	case reflect.String:
-		err = binCode.String_(a)
-	case reflect.Array:
-		if a.Type().Elem().Kind() == reflect.Uint8 {
-			err = binCode.ArrayBytes(a)
-		}else{
-			err = binCode.Array(a)
+
+	if a.Kind()!= reflect.Ptr&&a.Type().Implements(nilMarshal) {
+		err =a.Interface().(Marshaler).Marshal(binCode,a)
+	}else{
+		switch a.Type().Kind() {
+		case reflect.String:
+			err = binCode.String_(a)
+		case reflect.Array:
+			if a.Type().Elem().Kind() == reflect.Uint8 {
+				err = binCode.ArrayBytes(a)
+			}else{
+				err = binCode.Array(a)
+			}
+		case reflect.Slice:
+			if a.Type().Elem().Kind()== reflect.Uint8 {
+				err = binCode.SliceBytes(a)
+			}else{
+				err = binCode.Slice(a)
+			}
+		case reflect.Bool:
+			err = binCode.Bool(a)
+		case reflect.Float32:
+			err = binCode.Float32(a)
+		case reflect.Float64:
+			err = binCode.Float64(a)
+		case reflect.Int8:
+			err = binCode.Int8(a)
+		case reflect.Int16:
+			err = binCode.Int16(a)
+		case reflect.Int32:
+			err = binCode.Int32(a)
+		case reflect.Int64:
+			err = binCode.Int64(a)
+		case reflect.Uint8:
+			err = binCode.Uint8(a)
+		case reflect.Uint16:
+			err = binCode.Uint16(a)
+		case reflect.Uint32:
+			err = binCode.Uint32(a)
+		case reflect.Uint64:
+			err = binCode.Uint64(a)
+		case reflect.Struct:
+			err = binCode.Struct(a)
+		case reflect.Ptr:
+			if a.IsNil() {
+				err = binCode.Int8(reflect.ValueOf(0))
+
+			}else{
+				err = binCode.Int8(reflect.ValueOf(1))
+				if err != nil {
+					return err
+				}
+				err = binCode.Marshal(a.Elem())
+			}
+		default:
+			err = errors.New("not supprot type")
 		}
-	case reflect.Slice:
-		if a.Type().Elem().Kind()== reflect.Uint8 {
-			err = binCode.SliceBytes(a)
-		}else{
-			err = binCode.Slice(a)
-		}
-	case reflect.Bool:
-		err = binCode.Bool(a)
-	case reflect.Float32:
-		err = binCode.Float32(a)
-	case reflect.Float64:
-		err = binCode.Float64(a)
-	case reflect.Int8:
-		err = binCode.Int8(a)
-	case reflect.Int16:
-		err = binCode.Int16(a)
-	case reflect.Int32:
-		err = binCode.Int32(a)
-	case reflect.Int64:
-		err = binCode.Int64(a)
-	case reflect.Uint8:
-		err = binCode.Uint8(a)
-	case reflect.Uint16:
-		err = binCode.Uint16(a)
-	case reflect.Uint32:
-		err = binCode.Uint32(a)
-	case reflect.Uint64:
-		err = binCode.Uint64(a)
-	case reflect.Struct:
-		err = binCode.Struct(a)
-	case reflect.Ptr:
-		if !a.IsValid() {
-			err = binCode.Bool(reflect.ValueOf(true))
-			err = binCode.Marshal(a.Elem())
-		}else{
-			err = binCode.Bool(reflect.ValueOf(true))
-		}
-	default:
-		err = errors.New("not supprot type")
 	}
+
 	return err
 }
 func(binCode *BinCodeSerizlize) Struct(a reflect.Value) error{
@@ -242,7 +252,7 @@ func(binCode *BinCodeSerizlize) Struct(a reflect.Value) error{
 
 func Marshal(val interface{}) ([]byte, error) {
 	seriz := NewBinCodeSerizlize()
-	err := seriz.Marshal(reflect.ValueOf(val))
+	err := seriz.Marshal(reflect.Indirect(reflect.ValueOf(val)))
 	if err != nil {
 		return nil, err
 	}

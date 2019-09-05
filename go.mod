@@ -10,6 +10,7 @@ require (
 	github.com/adiabat/bech32 v0.0.0-20170505011816-6289d404861d
 	github.com/alecthomas/participle v0.3.0
 	github.com/dchest/blake2b v1.0.0
+	github.com/ethereum/go-ethereum/crypto/secp256k1
 	github.com/decred/dcrd/dcrec/secp256k1 v1.0.2
 	github.com/hraban/lrucache v0.0.0-20150309112052-a1cd14943f73 // indirect
 	github.com/hunjixin/automapper v0.0.0-20190819023506-f5120f46a84f

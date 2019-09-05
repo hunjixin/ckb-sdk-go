@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"math"
 	"reflect"
 )
@@ -191,17 +190,12 @@ func (binCode *BinCodeDeSerizlize) Struct(t reflect.Type) (reflect.Value, error)
 	valT := reflect.New(t).Elem()
 	for i := 0; i < valT.NumField(); i++ {
 		field := valT.Field(i)
-		fmt.Println(t.Field(i).Name)
-		if "Hash_type" == t.Field(i).Name{
-			fmt.Println()
-		}
 		val, err := binCode.UnMarshal(field.Type())
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
 		if val.IsValid() {
-			fmt.Println(val.Interface())
-			field.Set(val)
+			field.Set(val.Convert(field.Type()))
 		}
 	}
 	return valT, nil
@@ -231,6 +225,20 @@ func (binCode *BinCodeDeSerizlize) Map(t reflect.Type) (reflect.Value, error) {
 
 var (
 	nilUnmarshal = reflect.TypeOf((*UnMarshaler)(nil)).Elem()
+	nilMarshal = reflect.TypeOf((*Marshaler)(nil)).Elem()
+	TString = reflect.TypeOf("")
+	TUint8 = reflect.TypeOf(uint8(0))
+	TUint16 = reflect.TypeOf(uint16(0))
+	TUint32 = reflect.TypeOf(uint32(0))
+	TUint64 = reflect.TypeOf(uint64(0))
+
+	TInt8 = reflect.TypeOf(int8(0))
+	TInt16 = reflect.TypeOf(int16(0))
+	TInt32 = reflect.TypeOf(int32(0))
+	TInt64 = reflect.TypeOf(int64(0))
+	TBool = reflect.TypeOf(false)
+	TFloat32 = reflect.TypeOf(float32(0))
+	TFloat64 = reflect.TypeOf(float64(0))
 )
 
 func (binCode *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, error) {
@@ -285,10 +293,8 @@ func (binCode *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, err
 					val = reflect.ValueOf(nil)
 				} else {
 					elem := t.Elem()
-					fmt.Println(t.Elem().Name())
 					val, err = binCode.UnMarshal(elem)
 					val = val.Addr()
-					fmt.Println(val.Interface())
 				}
 			}
 		default:
@@ -298,11 +304,14 @@ func (binCode *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, err
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
-	//fmt.Println(val.Interface())
 	return val, nil
 }
 
 func UnMarshal(data []byte, t reflect.Type) (interface{}, error) {
 	des := NewBinCodeDeSerizlize(data)
-	return des.UnMarshal(t)
+	refVal, err :=  des.UnMarshal(t)
+	if err != nil {
+		return nil ,err
+	}
+	return refVal.Interface(), nil
 }

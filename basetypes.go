@@ -16,7 +16,7 @@ const (
 	RpcType RpcScriptHashType = "type"
 )
 
-type ScriptHashType uint8
+type ScriptHashType uint32
 
 const (
 	Data ScriptHashType = 0
