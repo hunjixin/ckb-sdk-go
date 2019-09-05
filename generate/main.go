@@ -85,7 +85,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	collector := &TypeCollecor{map[string]string{}}
+	collector := &TypeCollecor{map[string]string{
+		"ScriptHashType":"RpcScriptHashType",
+		"Witness":"RpcWitness",
+	}}
 	collector.Walk(ast)
 	collector.newTypeMap["String"] = "string"
 	collector.newTypeMap["JsonBytes"] = "string"
@@ -127,6 +130,7 @@ func main() {
 		"AlertPriority":   true,
 		"EpochNumber":     true,
 		"U256":            true,
+		"ScriptHashType":            true,
 	}
 
 	realType := map[string]*TypeConvert{

@@ -94,7 +94,7 @@ var TCellOutPoint = reflect.TypeOf(CellOutPoint{})
 
 type CellOutPoint struct {
 	Tx_hash H256
-	Index   uint32
+	Index   uint64
 }
 
 var TOutPoint = reflect.TypeOf(OutPoint{})
@@ -112,6 +112,7 @@ type CellInput struct {
 }
 
 var TWitness = reflect.TypeOf(Witness{})
+
 
 var TTransaction = reflect.TypeOf(Transaction{})
 
@@ -279,7 +280,7 @@ var TTransactionPoint = reflect.TypeOf(TransactionPoint{})
 type TransactionPoint struct {
 	Block_number uint64
 	Tx_hash      H256
-	Index        uint32
+	Index        uint64
 }
 
 var TLockHashIndexState = reflect.TypeOf(LockHashIndexState{})

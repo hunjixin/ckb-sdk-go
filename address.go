@@ -39,8 +39,14 @@ type AddressOptions struct {
 }
 
 var (
-	defaultAddressOptions = &AddressOptions{
-		prefix:        Mainnet,
+	defaultAddressOptions =  MainAddressOptions
+	MainAddressOptions = &AddressOptions{
+prefix:        Mainnet,
+type_:         HashIdx,
+codeHashIndex: 0x00,
+}
+	TestnetAddressOptions = &AddressOptions{
+		prefix:        Testnet,
 		type_:         HashIdx,
 		codeHashIndex: 0x00,
 	}

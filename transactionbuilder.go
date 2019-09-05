@@ -11,8 +11,9 @@ import (
 
 type Witness [][]byte
 type H256 [32]byte
-type U256 string
-
+type RpcH256 string
+type U256 [32]byte
+type RpcU256 string
 var (
 	ZeroH256 = H256{}
 )
@@ -31,6 +32,14 @@ func (h256 H256) Bytes() []byte {
 func (h256 *H256) SetBytes(h256Bytes []byte) {
 	copy(h256[:], h256Bytes)
 }
+
+func StringToHash(str string) *H256 {
+	hbytes,_ := hex.DecodeString(str)
+	h256 := &H256{}
+	h256.SetBytes(hbytes)
+	return  h256
+}
+
 func (_ H256) UnMarshal(binCode *BinCodeDeSerizlize) (reflect.Value, error) {
 	strBytes, err := binCode.SliceBytes()
 	if err != nil {
@@ -59,6 +68,14 @@ type TransactionBuilder struct {
 	Witnesses []Witness
 }
 
+func NewTransactionBuilder () *TransactionBuilder {
+return &TransactionBuilder{
+	Deps:[]OutPoint{},
+	Inputs:[]CellInput{},
+	Outputs: []CellOutput{},
+	Witnesses: []Witness{},
+}
+}
 func FromTransction(tx Transaction) *TransactionBuilder {
 	return &TransactionBuilder{
 		Version:   tx.Version,
@@ -147,7 +164,7 @@ func (tx *Transaction) WitnessHash() H256 {
 	return Black256(bytes)
 }
 
-func SignTx(tx TransactionBuilder, priv *secp256k1.PrivateKey) Transaction {
+func SignTx(tx *TransactionBuilder, priv *secp256k1.PrivateKey) []byte {
 	raw := tx.Build()
 	txHash := raw.TxHash()
 	hashBytes := make([][]byte, len(tx.Witnesses)+1)
@@ -160,8 +177,8 @@ func SignTx(tx TransactionBuilder, priv *secp256k1.PrivateKey) Transaction {
 	}
 	hash := Black256M(hashBytes...)
 	sig := SignMesage(hash, priv)
-	tx.AppendWitness([][]byte{sig})
-	return tx.Build()
+	//tx.AppendWitness([][]byte{sig})
+	return sig
 }
 
 func SignMesage(hash []byte, priv *secp256k1.PrivateKey) []byte {

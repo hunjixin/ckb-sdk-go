@@ -1,88 +1,88 @@
 package ckb_sdk_go
 
 type RpcAlert struct {
-	Id           string
-	Cancel       string
-	Signatures   []string
-	Min_version  *string
-	Max_version  *string
-	Priority     string
-	Notice_until string
-	Message      string
+	Id           string   `json:"id"`
+	Cancel       string   `json:"cancel"`
+	Signatures   []string `json:"signatures"`
+	Min_version  *string  `json:"min_version"`
+	Max_version  *string  `json:"max_version"`
+	Priority     string   `json:"priority"`
+	Notice_until string   `json:"notice_until"`
+	Message      string   `json:"message"`
 }
 
 type RpcAlertMessage struct {
-	Id           string
-	Priority     string
-	Notice_until string
-	Message      string
+	Id           string `json:"id"`
+	Priority     string `json:"priority"`
+	Notice_until string `json:"notice_until"`
+	Message      string `json:"message"`
 }
 
 type RpcBlockTemplate struct {
-	Version            string
-	Difficulty         string
-	Current_time       string
-	Number             string
-	Epoch              string
-	Parent_hash        string
-	Cycles_limit       string
-	Bytes_limit        string
-	Uncles_count_limit string
-	Uncles             []RpcUncleTemplate
-	Transactions       []RpcTransactionTemplate
-	Proposals          []string
-	Cellbase           RpcCellbaseTemplate
-	Work_id            string
-	Dao                string
+	Version            string                   `json:"version"`
+	Difficulty         string                   `json:"difficulty"`
+	Current_time       string                   `json:"current_time"`
+	Number             string                   `json:"number"`
+	Epoch              string                   `json:"epoch"`
+	Parent_hash        string                   `json:"parent_hash"`
+	Cycles_limit       string                   `json:"cycles_limit"`
+	Bytes_limit        string                   `json:"bytes_limit"`
+	Uncles_count_limit string                   `json:"uncles_count_limit"`
+	Uncles             []RpcUncleTemplate       `json:"uncles"`
+	Transactions       []RpcTransactionTemplate `json:"transactions"`
+	Proposals          []string                 `json:"proposals"`
+	Cellbase           RpcCellbaseTemplate      `json:"cellbase"`
+	Work_id            string                   `json:"work_id"`
+	Dao                string                   `json:"dao"`
 }
 
 type RpcUncleTemplate struct {
-	Hash      string
-	Required  bool
-	Proposals []string
-	Header    RpcHeader
+	Hash      string    `json:"hash"`
+	Required  bool      `json:"required"`
+	Proposals []string  `json:"proposals"`
+	Header    RpcHeader `json:"header"`
 }
 
 type RpcCellbaseTemplate struct {
-	Hash   string
-	Cycles *string
-	Data   RpcTransaction
+	Hash   string         `json:"hash"`
+	Cycles *string        `json:"cycles"`
+	Data   RpcTransaction `json:"data"`
 }
 
 type RpcTransactionTemplate struct {
-	Hash     string
-	Required bool
-	Cycles   *string
-	Depends  *[]string
-	Data     RpcTransaction
+	Hash     string         `json:"hash"`
+	Required bool           `json:"required"`
+	Cycles   *string        `json:"cycles"`
+	Depends  *[]string      `json:"depends"`
+	Data     RpcTransaction `json:"data"`
 }
 
 type RpcScript struct {
-	Args      []string
-	Code_hash string
-	Hash_type ScriptHashType
+	Args      []string          `json:"args"`
+	Code_hash string            `json:"code_hash"`
+	Hash_type RpcScriptHashType `json:"hash_type"`
 }
 
 type RpcCellOutput struct {
-	Capacity string
-	Data     string
-	Lock     RpcScript
-	Type_    *RpcScript
+	Capacity string     `json:"capacity"`
+	Data     string     `json:"data"`
+	Lock     RpcScript  `json:"lock"`
+	Type_    *RpcScript `json:"type_"`
 }
 
 type RpcCellOutPoint struct {
-	Tx_hash string
-	Index   string
+	Tx_hash string `json:"tx_hash"`
+	Index   string `json:"index"`
 }
 
 type RpcOutPoint struct {
-	Cell       *RpcCellOutPoint
-	Block_hash *string
+	Cell       *RpcCellOutPoint `json:"cell"`
+	Block_hash *string          `json:"block_hash"`
 }
 
 type RpcCellInput struct {
-	Previous_output RpcOutPoint
-	Since           string
+	Previous_output RpcOutPoint `json:"previous_output"`
+	Since           string      `json:"since"`
 }
 
 type RpcWitness struct {
@@ -90,166 +90,166 @@ type RpcWitness struct {
 }
 
 type RpcTransaction struct {
-	Version   string
-	Deps      []RpcOutPoint
-	Inputs    []RpcCellInput
-	Outputs   []RpcCellOutput
-	Witnesses []RpcWitness
+	Version   string          `json:"version"`
+	Deps      []RpcOutPoint   `json:"deps"`
+	Inputs    []RpcCellInput  `json:"inputs"`
+	Outputs   []RpcCellOutput `json:"outputs"`
+	Witnesses []RpcWitness    `json:"witnesses"`
 }
 
 type RpcTransactionView struct {
-	Inner RpcTransaction
-	Hash  string
+	Inner RpcTransaction `json:"inner"`
+	Hash  string         `json:"hash"`
 }
 
 type RpcTransactionWithStatus struct {
-	Transaction RpcTransactionView
-	Tx_status   RpcTxStatus
+	Transaction RpcTransactionView `json:"transaction"`
+	Tx_status   RpcTxStatus        `json:"tx_status"`
 }
 
 type RpcTxStatus struct {
-	Status     Status
-	Block_hash *string
+	Status     Status  `json:"status"`
+	Block_hash *string `json:"block_hash"`
 }
 
 type RpcSeal struct {
-	Nonce string
-	Proof string
+	Nonce string `json:"nonce"`
+	Proof string `json:"proof"`
 }
 
 type RpcHeader struct {
-	Version           string
-	Parent_hash       string
-	Timestamp         string
-	Number            string
-	Epoch             string
-	Transactions_root string
-	Witnesses_root    string
-	Proposals_hash    string
-	Difficulty        string
-	Uncles_hash       string
-	Uncles_count      string
-	Dao               string
-	Seal              RpcSeal
+	Version           string  `json:"version"`
+	Parent_hash       string  `json:"parent_hash"`
+	Timestamp         string  `json:"timestamp"`
+	Number            string  `json:"number"`
+	Epoch             string  `json:"epoch"`
+	Transactions_root string  `json:"transactions_root"`
+	Witnesses_root    string  `json:"witnesses_root"`
+	Proposals_hash    string  `json:"proposals_hash"`
+	Difficulty        string  `json:"difficulty"`
+	Uncles_hash       string  `json:"uncles_hash"`
+	Uncles_count      string  `json:"uncles_count"`
+	Dao               string  `json:"dao"`
+	Seal              RpcSeal `json:"seal"`
 }
 
 type RpcHeaderView struct {
-	Inner RpcHeader
-	Hash  string
+	Inner RpcHeader `json:"inner"`
+	Hash  string    `json:"hash"`
 }
 
 type RpcUncleBlock struct {
-	Header    RpcHeader
-	Proposals []string
+	Header    RpcHeader `json:"header"`
+	Proposals []string  `json:"proposals"`
 }
 
 type RpcUncleBlockView struct {
-	Header    RpcHeaderView
-	Proposals []string
+	Header    RpcHeaderView `json:"header"`
+	Proposals []string      `json:"proposals"`
 }
 
 type RpcBlock struct {
-	Header       RpcHeader
-	Uncles       []RpcUncleBlock
-	Transactions []RpcTransaction
-	Proposals    []string
+	Header       RpcHeader        `json:"header"`
+	Uncles       []RpcUncleBlock  `json:"uncles"`
+	Transactions []RpcTransaction `json:"transactions"`
+	Proposals    []string         `json:"proposals"`
 }
 
 type RpcBlockView struct {
-	Header       RpcHeaderView
-	Uncles       []RpcUncleBlockView
-	Transactions []RpcTransactionView
-	Proposals    []string
+	Header       RpcHeaderView        `json:"header"`
+	Uncles       []RpcUncleBlockView  `json:"uncles"`
+	Transactions []RpcTransactionView `json:"transactions"`
+	Proposals    []string             `json:"proposals"`
 }
 
 type RpcEpochView struct {
-	Number       string
-	Epoch_reward string
-	Start_number string
-	Length       string
-	Difficulty   string
+	Number       string `json:"number"`
+	Epoch_reward string `json:"epoch_reward"`
+	Start_number string `json:"start_number"`
+	Length       string `json:"length"`
+	Difficulty   string `json:"difficulty"`
 }
 
 type RpcBlockRewardView struct {
-	Total           string
-	Primary         string
-	Secondary       string
-	Tx_fee          string
-	Proposal_reward string
+	Total           string `json:"total"`
+	Primary         string `json:"primary"`
+	Secondary       string `json:"secondary"`
+	Tx_fee          string `json:"tx_fee"`
+	Proposal_reward string `json:"proposal_reward"`
 }
 
 type RpcCellOutputWithOutPoint struct {
-	Out_point RpcOutPoint
-	Capacity  string
-	Lock      RpcScript
+	Out_point RpcOutPoint `json:"out_point"`
+	Capacity  string      `json:"capacity"`
+	Lock      RpcScript   `json:"lock"`
 }
 
 type RpcCellWithStatus struct {
-	Cell   *RpcCellOutput
-	Status string
+	Cell   *RpcCellOutput `json:"cell"`
+	Status string         `json:"status"`
 }
 
 type RpcChainInfo struct {
-	Chain                     string
-	Median_time               string
-	Epoch                     string
-	Difficulty                string
-	Is_initial_block_download bool
-	Alerts                    []RpcAlertMessage
+	Chain                     string            `json:"chain"`
+	Median_time               string            `json:"median_time"`
+	Epoch                     string            `json:"epoch"`
+	Difficulty                string            `json:"difficulty"`
+	Is_initial_block_download bool              `json:"is_initial_block_download"`
+	Alerts                    []RpcAlertMessage `json:"alerts"`
 }
 
 type RpcDryRunResult struct {
-	Cycles string
+	Cycles string `json:"cycles"`
 }
 
 type RpcLiveCell struct {
-	Created_by  RpcTransactionPoint
-	Cell_output RpcCellOutput
+	Created_by  RpcTransactionPoint `json:"created_by"`
+	Cell_output RpcCellOutput       `json:"cell_output"`
 }
 
 type RpcCellTransaction struct {
-	Created_by  RpcTransactionPoint
-	Consumed_by *RpcTransactionPoint
+	Created_by  RpcTransactionPoint  `json:"created_by"`
+	Consumed_by *RpcTransactionPoint `json:"consumed_by"`
 }
 
 type RpcTransactionPoint struct {
-	Block_number string
-	Tx_hash      string
-	Index        string
+	Block_number string `json:"block_number"`
+	Tx_hash      string `json:"tx_hash"`
+	Index        string `json:"index"`
 }
 
 type RpcLockHashIndexState struct {
-	Lock_hash    string
-	Block_number string
-	Block_hash   string
+	Lock_hash    string `json:"lock_hash"`
+	Block_number string `json:"block_number"`
+	Block_hash   string `json:"block_hash"`
 }
 
 type RpcNode struct {
-	Version     string
-	Node_id     string
-	Addresses   []RpcNodeAddress
-	Is_outbound *bool
+	Version     string           `json:"version"`
+	Node_id     string           `json:"node_id"`
+	Addresses   []RpcNodeAddress `json:"addresses"`
+	Is_outbound *bool            `json:"is_outbound"`
 }
 
 type RpcNodeAddress struct {
-	Address string
-	Score   string
+	Address string `json:"address"`
+	Score   string `json:"score"`
 }
 
 type RpcBannedAddress struct {
-	Address    string
-	Ban_until  string
-	Ban_reason string
-	Created_at string
+	Address    string `json:"address"`
+	Ban_until  string `json:"ban_until"`
+	Ban_reason string `json:"ban_reason"`
+	Created_at string `json:"created_at"`
 }
 
 type RpcTxPoolInfo struct {
-	Pending             string
-	Proposed            string
-	Orphan              string
-	Total_tx_size       string
-	Total_tx_cycles     string
-	Last_txs_updated_at string
+	Pending             string `json:"pending"`
+	Proposed            string `json:"proposed"`
+	Orphan              string `json:"orphan"`
+	Total_tx_size       string `json:"total_tx_size"`
+	Total_tx_cycles     string `json:"total_tx_cycles"`
+	Last_txs_updated_at string `json:"last_txs_updated_at"`
 }
 
 type RpcPeerState struct {

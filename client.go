@@ -9,6 +9,12 @@ type CkbClient struct {
 	client jsonrpc.RPCClient
 }
 
+func NewCkbClient(url string) *CkbClient {
+	return &CkbClient{
+		url:    url,
+		client: jsonrpc.NewClient(url),
+	}
+}
 func (ckbClient *CkbClient) SendAlert(_alert RpcAlert) error {
 	res, err := ckbClient.client.Call("send_alert", _alert)
 

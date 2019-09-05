@@ -11,8 +11,8 @@ const (
 type RpcScriptHashType string
 
 const (
-	RpcData RpcScriptHashType = "data"
-	RpcType RpcScriptHashType = "type"
+	RpcData RpcScriptHashType = "Data"
+	RpcType RpcScriptHashType = "Type"
 )
 
 type ScriptHashType uint32

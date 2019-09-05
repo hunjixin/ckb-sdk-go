@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"go/format"
 	"io/ioutil"
 	"os"
@@ -194,6 +193,7 @@ func (goGenerate *RpcGenerate) WalkField(field *Field) {
 		goGenerate.CodeBuffer.WriteString(Capitalize(name) + " ")
 		goGenerate.RealTypeBuffer.WriteString(Capitalize(name) + " ")
 		goGenerate.WalkType(field.Pair.Type)
+		goGenerate.CodeBuffer.WriteString( "`json:\""+name+"\"`")
 	} else {
 		//NOTICE private
 		goGenerate.CodeBuffer.WriteString(name + " ")
@@ -224,9 +224,6 @@ func (goGenerate *RpcGenerate) WalkType(typeRef *TypeRef) {
 		} else {
 			goGenerate.CodeBuffer.WriteString(typeRef.Type)
 		}
-		if typeRef.Type == "JsonBytes" {
-			fmt.Println()
-		}
 		if redefineType, ok := goGenerate.RealTypeMap[typeRef.Type]; ok {
 			goGenerate.RealTypeBuffer.WriteString(redefineType.ToType)
 		} else {
@@ -250,6 +247,13 @@ func (g *RpcGenerate) SaveTo(rpcTypePath string, rpcClientPath string, realTypeP
 type CkbClient struct {
 	url    string
 	client jsonrpc.RPCClient
+}
+
+func NewCkbClient(url string) *CkbClient {
+	return &CkbClient{
+		url:    url,
+		client: jsonrpc.NewClient(url),
+	}
 }
 `,
 	)
