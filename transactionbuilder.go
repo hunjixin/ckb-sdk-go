@@ -3,6 +3,7 @@ package ckb_sdk_go
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
+	"github.com/dchest/blake2b"
 	"github.com/decred/dcrd/dcrec/secp256k1"
 	"github.com/ethereum/go-ethereum/crypto"
 	"reflect"
@@ -158,8 +159,49 @@ func SignTx(tx TransactionBuilder, priv *secp256k1.PrivateKey) Transaction {
 		}
 	}
 	hash := Black256M(hashBytes...)
-	sig, _ := crypto.Sign(hash[:], (*ecdsa.PrivateKey)(priv))
-
+	sig := SignMesage(hash, priv)
 	tx.AppendWitness([][]byte{sig})
 	return tx.Build()
+}
+
+func SignMesage(hash []byte, priv *secp256k1.PrivateKey) []byte {
+	sig, _ := crypto.Sign(hash, (*ecdsa.PrivateKey)(priv))
+	return sig
+}
+
+func Verify(sig []byte, tx *Transaction) bool {
+	txHash := tx.TxHash()
+	hashBytes := make([][]byte, len(tx.Witnesses)+1)
+	hashBytes[0] = txHash[:]
+	for index, witness := range tx.Witnesses {
+		for _, bytes := range witness {
+			index++
+			hashBytes[index] = bytes
+		}
+	}
+	hash := Black256M(hashBytes...)
+	return VerifyMessage(hash, sig)
+}
+
+func VerifyMessage(hash []byte, sig []byte) bool {
+	pk, err := crypto.Ecrecover(hash, sig)
+	if err != nil {
+		return false
+	}
+	return crypto.VerifySignature(pk, hash, sig)
+}
+
+func Black256(bytes []byte) H256 {
+	hash, _ := blake2b.New(config)
+	hash.Write(bytes)
+	h256 := H256{}
+	h256.SetBytes(hash.Sum(nil))
+	return h256
+}
+func Black256M(bytes ...[]byte) []byte {
+	hash, _ := blake2b.New(config)
+	for _, b := range bytes {
+		hash.Write(b)
+	}
+	return hash.Sum(nil)
 }
