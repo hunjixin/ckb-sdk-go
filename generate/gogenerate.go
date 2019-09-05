@@ -33,9 +33,9 @@ type RpcGenerate struct {
 	RpcTypeMap  map[string]string
 	SimpleType  map[string]bool
 
-	RealStructs     []string
-	RealTypeBuffer  *bytes.Buffer
-	RealTypeMap  map[string]*TypeConvert
+	RealStructs    []string
+	RealTypeBuffer *bytes.Buffer
+	RealTypeMap    map[string]*TypeConvert
 }
 
 func (goGenerate *RpcGenerate) Walk(ast *RustAst) {
@@ -51,8 +51,8 @@ func (goGenerate *RpcGenerate) Walk(ast *RustAst) {
 
 func (goGenerate *RpcGenerate) WalkStruct(ast *RustStruct) {
 	if ast.IsPublic {
-		goGenerate.CodeBuffer =  &bytes.Buffer{}
-		goGenerate.RealTypeBuffer =  &bytes.Buffer{}
+		goGenerate.CodeBuffer = &bytes.Buffer{}
+		goGenerate.RealTypeBuffer = &bytes.Buffer{}
 		//write rpc struct
 		goGenerate.RealStructs = append(goGenerate.RealStructs, "var T"+Capitalize(ast.Name)+"=reflect.TypeOf("+Capitalize(ast.Name)+"{})")
 		rpcName := "Rpc" + Capitalize(ast.Name)
@@ -78,12 +78,12 @@ func (goGenerate *RpcGenerate) WalkTrait(ast *Trait) {
 }
 
 func (goGenerate *RpcGenerate) WalkRpcFunc(rpcFunc *RpcFunc) {
-	goGenerate.CodeBuffer =  &bytes.Buffer{}
+	goGenerate.CodeBuffer = &bytes.Buffer{}
 	goGenerate.CodeBuffer.WriteString("func (ckbClient *CkbClient) ")
 	goGenerate.CodeBuffer.WriteString(LowToHeigh(rpcFunc.RpcName))
 	goGenerate.WalkFunc(rpcFunc.Func)
 
-	argLen := len(rpcFunc.Func.Args)-1
+	argLen := len(rpcFunc.Func.Args) - 1
 	goGenerate.CodeBuffer.WriteString("(")
 	argsName := []string{}
 	for index, arg := range rpcFunc.Func.Args {
@@ -92,15 +92,15 @@ func (goGenerate *RpcGenerate) WalkRpcFunc(rpcFunc *RpcFunc) {
 			if argLen != index {
 				goGenerate.CodeBuffer.WriteString(", ")
 			}
-			argsName = append(argsName,arg.Pair.Name)
-		}else{
+			argsName = append(argsName, arg.Pair.Name)
+		} else {
 			// not done
 		}
 	}
 	goGenerate.CodeBuffer.WriteString(")")
-	if rpcFunc.Func.Return != nil&&!rpcFunc.Func.Return.Void {
+	if rpcFunc.Func.Return != nil && !rpcFunc.Func.Return.Void {
 		returnName := goGenerate.getTypeName(rpcFunc.Func.Return)
-		goGenerate.CodeBuffer.WriteString(" ( *"+returnName+" , error){\n")
+		goGenerate.CodeBuffer.WriteString(" ( *" + returnName + " , error){\n")
 		//generate rpc call code
 		/*rpcBlock := &RpcBlock{}
 		err := ckbClient.client.CallFor(rpcBlock, "get_block_by_number", strconv.Itoa(number))
@@ -111,14 +111,14 @@ func (goGenerate *RpcGenerate) WalkRpcFunc(rpcFunc *RpcFunc) {
 		variable := strings.ToLower(returnName)
 		_, isSimple := goGenerate.SimpleType[returnName]
 		if isSimple {
-			goGenerate.CodeBuffer.WriteString(variable+ ":= "+returnName+"(\"\")\n")
-			goGenerate.CodeBuffer.WriteString("err := ckbClient.client.CallFor(&"+variable +",\""+rpcFunc.RpcName+"\"")
-		}else{
-			goGenerate.CodeBuffer.WriteString(variable+ ":= &"+returnName+"{}\n")
-			goGenerate.CodeBuffer.WriteString("err := ckbClient.client.CallFor("+variable +",\""+rpcFunc.RpcName+"\"")
+			goGenerate.CodeBuffer.WriteString(variable + ":= " + returnName + "(\"\")\n")
+			goGenerate.CodeBuffer.WriteString("err := ckbClient.client.CallFor(&" + variable + ",\"" + rpcFunc.RpcName + "\"")
+		} else {
+			goGenerate.CodeBuffer.WriteString(variable + ":= &" + returnName + "{}\n")
+			goGenerate.CodeBuffer.WriteString("err := ckbClient.client.CallFor(" + variable + ",\"" + rpcFunc.RpcName + "\"")
 		}
 
-		for _, arg := range argsName{
+		for _, arg := range argsName {
 			goGenerate.CodeBuffer.WriteString("," + arg)
 		}
 		goGenerate.CodeBuffer.WriteString(")\n")
@@ -127,21 +127,21 @@ func (goGenerate *RpcGenerate) WalkRpcFunc(rpcFunc *RpcFunc) {
 			return nil, err
 		}`)
 		if isSimple {
-			goGenerate.CodeBuffer.WriteString("\nreturn &"+ variable +", nil\n")
-		}else{
-			goGenerate.CodeBuffer.WriteString("\nreturn "+ variable +", nil\n")
+			goGenerate.CodeBuffer.WriteString("\nreturn &" + variable + ", nil\n")
+		} else {
+			goGenerate.CodeBuffer.WriteString("\nreturn " + variable + ", nil\n")
 		}
 
 	} else {
 		goGenerate.CodeBuffer.WriteString(" error {\n")
 
-		goGenerate.CodeBuffer.WriteString(`res, err := ckbClient.client.Call("`+rpcFunc.RpcName+`"`)
-		for _, arg := range argsName{
+		goGenerate.CodeBuffer.WriteString(`res, err := ckbClient.client.Call("` + rpcFunc.RpcName + `"`)
+		for _, arg := range argsName {
 			goGenerate.CodeBuffer.WriteString("," + arg)
 		}
 		goGenerate.CodeBuffer.WriteString(")\n")
 		goGenerate.CodeBuffer.WriteString(
-`
+			`
 		if err != nil {
 			return err
 		}
@@ -159,7 +159,7 @@ func (goGenerate *RpcGenerate) WalkRpcFunc(rpcFunc *RpcFunc) {
 func (goGenerate *RpcGenerate) WalkFunc(rFunc *Func) {
 	//NOT DONE
 }
-func (goGenerate *RpcGenerate) getTypeName (t *TypeRef) string {
+func (goGenerate *RpcGenerate) getTypeName(t *TypeRef) string {
 	if t.Array != nil {
 		return goGenerate.getTypeName(t.Array)
 	}
@@ -191,19 +191,18 @@ func (goGenerate *RpcGenerate) WalkPair(pair *Pair) {
 func (goGenerate *RpcGenerate) WalkField(field *Field) {
 	name := field.Pair.Name
 	if field.IsPublic {
-		goGenerate.CodeBuffer.WriteString(Capitalize(name)+ " ")
-		goGenerate.RealTypeBuffer.WriteString(Capitalize(name)+ " ")
+		goGenerate.CodeBuffer.WriteString(Capitalize(name) + " ")
+		goGenerate.RealTypeBuffer.WriteString(Capitalize(name) + " ")
 		goGenerate.WalkType(field.Pair.Type)
 	} else {
 		//NOTICE private
-		goGenerate.CodeBuffer.WriteString(name+" ")
-		goGenerate.RealTypeBuffer.WriteString(name+" ")
+		goGenerate.CodeBuffer.WriteString(name + " ")
+		goGenerate.RealTypeBuffer.WriteString(name + " ")
 		goGenerate.WalkType(field.Pair.Type)
 	}
 	goGenerate.CodeBuffer.WriteByte('\n')
 	goGenerate.RealTypeBuffer.WriteByte('\n')
 }
-
 
 func (goGenerate *RpcGenerate) WalkType(typeRef *TypeRef) {
 	if !typeRef.Void {
@@ -262,8 +261,6 @@ type CkbClient struct {
 	fileBytes, _ := format.Source(g.CodeBuffer.Bytes())
 	ioutil.WriteFile(rpcClientPath, fileBytes, os.ModePerm)
 
-
-
 	g.CodeBuffer = &bytes.Buffer{}
 	g.CodeBuffer.WriteString("package " + g.PackageName + "\n")
 	for _, goStruct := range g.Structs {
@@ -271,13 +268,11 @@ type CkbClient struct {
 		g.CodeBuffer.WriteString("\n")
 	}
 	fileBytes, _ = format.Source(g.CodeBuffer.Bytes())
-	ioutil.WriteFile(rpcTypePath,fileBytes, os.ModePerm)
-
-
+	ioutil.WriteFile(rpcTypePath, fileBytes, os.ModePerm)
 
 	g.RealTypeBuffer = &bytes.Buffer{}
 	g.RealTypeBuffer.WriteString("package " + g.PackageName + "\n")
-	g.RealTypeBuffer.WriteString(`import ("reflect")`+"\n")
+	g.RealTypeBuffer.WriteString(`import ("reflect")` + "\n")
 	for _, goStruct := range g.RealStructs {
 		g.RealTypeBuffer.WriteString(goStruct)
 		g.RealTypeBuffer.WriteString("\n")

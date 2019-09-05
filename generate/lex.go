@@ -11,39 +11,36 @@ type RustAst struct {
 }
 
 type Token struct {
-	Type *RustStruct `@@`
-	Trait *Trait    `| @@`
+	Type  *RustStruct `@@`
+	Trait *Trait      `| @@`
 }
 
 type Trait struct {
-	IsPublic bool     `@"pub"?`
-	Name     string   `"trait" @Ident`
-	Funcs   []*RpcFunc  `"{" @@* "}"`
+	IsPublic bool       `@"pub"?`
+	Name     string     `"trait" @Ident`
+	Funcs    []*RpcFunc `"{" @@* "}"`
 }
 
 type RpcFunc struct {
 	RpcName string `"#" "[" "rpc" "(" "name" "=" "\"" @Ident "\"" ")" "]"`
-	Func  *Func    ` @@ ";"`
+	Func    *Func  ` @@ ";"`
 }
 
 type Func struct {
-	Name string 	  `"fn" @Ident `
-	Args []*Argument  `"(" [ @@ { "," @@ } {","}] ")"`
-	Return *TypeRef   `"-" ">" "Result" "<" @@ ">"`
+	Name   string      `"fn" @Ident `
+	Args   []*Argument `"(" [ @@ { "," @@ } {","}] ")"`
+	Return *TypeRef    `"-" ">" "Result" "<" @@ ">"`
 }
 
-type Argument struct{
-	IsSelf         bool     `( @("&" "self")`
-	Pair  *Pair 	`  | @@ )`
+type Argument struct {
+	IsSelf bool  `( @("&" "self")`
+	Pair   *Pair `  | @@ )`
 }
 
 type Pair struct {
-	Name    string   `@Ident`
-	Type    *TypeRef  `":" @@`
+	Name string   `@Ident`
+	Type *TypeRef `":" @@`
 }
-
-
-
 
 type RustStruct struct {
 	IsPublic bool     `@"pub"`
@@ -52,14 +49,14 @@ type RustStruct struct {
 }
 
 type Field struct {
-	IsPublic bool    `@"pub"?`
-	Pair  *Pair      `@@ ","`
+	IsPublic bool  `@"pub"?`
+	Pair     *Pair `@@ ","`
 }
 
 type TypeRef struct {
 	Array        *TypeRef `( "Vec" "<" @@ ">"`
 	NullAbleType *TypeRef `  | "Option" "<" @@ ">"`
-	Void         bool   	`| @( "(" ")" )`
+	Void         bool     `| @( "(" ")" )`
 	Type         string   `  | @Ident)`
 }
 

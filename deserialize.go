@@ -225,18 +225,18 @@ func (binCode *BinCodeDeSerizlize) Map(t reflect.Type) (reflect.Value, error) {
 
 var (
 	nilUnmarshal = reflect.TypeOf((*UnMarshaler)(nil)).Elem()
-	nilMarshal = reflect.TypeOf((*Marshaler)(nil)).Elem()
-	TString = reflect.TypeOf("")
-	TUint8 = reflect.TypeOf(uint8(0))
-	TUint16 = reflect.TypeOf(uint16(0))
-	TUint32 = reflect.TypeOf(uint32(0))
-	TUint64 = reflect.TypeOf(uint64(0))
+	nilMarshal   = reflect.TypeOf((*Marshaler)(nil)).Elem()
+	TString      = reflect.TypeOf("")
+	TUint8       = reflect.TypeOf(uint8(0))
+	TUint16      = reflect.TypeOf(uint16(0))
+	TUint32      = reflect.TypeOf(uint32(0))
+	TUint64      = reflect.TypeOf(uint64(0))
 
-	TInt8 = reflect.TypeOf(int8(0))
-	TInt16 = reflect.TypeOf(int16(0))
-	TInt32 = reflect.TypeOf(int32(0))
-	TInt64 = reflect.TypeOf(int64(0))
-	TBool = reflect.TypeOf(false)
+	TInt8    = reflect.TypeOf(int8(0))
+	TInt16   = reflect.TypeOf(int16(0))
+	TInt32   = reflect.TypeOf(int32(0))
+	TInt64   = reflect.TypeOf(int64(0))
+	TBool    = reflect.TypeOf(false)
 	TFloat32 = reflect.TypeOf(float32(0))
 	TFloat64 = reflect.TypeOf(float64(0))
 )
@@ -244,7 +244,7 @@ var (
 func (binCode *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, error) {
 	var err error
 	var val reflect.Value
-	if t.Kind()!= reflect.Ptr&&t.Implements(nilUnmarshal) {
+	if t.Kind() != reflect.Ptr && t.Implements(nilUnmarshal) {
 		val, err = reflect.New(t).Elem().Interface().(UnMarshaler).UnMarshal(binCode)
 	} else {
 		switch t.Kind() {
@@ -309,9 +309,9 @@ func (binCode *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, err
 
 func UnMarshal(data []byte, t reflect.Type) (interface{}, error) {
 	des := NewBinCodeDeSerizlize(data)
-	refVal, err :=  des.UnMarshal(t)
+	refVal, err := des.UnMarshal(t)
 	if err != nil {
-		return nil ,err
+		return nil, err
 	}
 	return refVal.Interface(), nil
 }

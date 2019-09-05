@@ -7,44 +7,47 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1"
 	"strings"
 )
+
 var (
 	config = &blake2b.Config{
 		Size:   32,
 		Person: []byte("ckb-default-hash"),
 	}
 )
+
 type AddressPrefix string
-const(
+
+const (
 	Mainnet AddressPrefix = "ckb"
 	Testnet AddressPrefix = "ckt"
 )
 
 type AddressType byte
-const(
+
+const (
 	BinHash AddressType = 0x00
 	HashIdx AddressType = 0x01
 )
 
-
 //export type CodeHashIndex = '0x00' | string
 
 type CodeHashIndex byte
-type AddressOptions struct  {
-	prefix AddressPrefix
-	type_ AddressType
-	codeHashIndex  CodeHashIndex
+type AddressOptions struct {
+	prefix        AddressPrefix
+	type_         AddressType
+	codeHashIndex CodeHashIndex
 }
 
 var (
-	defaultAddressOptions = &AddressOptions {
-		prefix:Mainnet,
-		type_: HashIdx,
-		codeHashIndex : 0x00,
+	defaultAddressOptions = &AddressOptions{
+		prefix:        Mainnet,
+		type_:         HashIdx,
+		codeHashIndex: 0x00,
 	}
 )
 
 func EnsurePrivateKey(priStr string) *secp256k1.PrivateKey {
-	priStr = strings.Replace(priStr, "0x", "", -1);
+	priStr = strings.Replace(priStr, "0x", "", -1)
 	if len(priStr)%2 != 0 {
 		priStr = "0" + priStr
 	}

@@ -1,6 +1,5 @@
 package ckb_sdk_go
 
-
 type Status string
 
 const (
@@ -43,17 +42,3 @@ const (
 	Shannon CapacityUnit = 1
 	Byte    CapacityUnit = 100000000
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
