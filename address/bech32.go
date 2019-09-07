@@ -1,4 +1,4 @@
-package ckb_sdk_go
+package address
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
-package ckb_sdk_go
+package core
 
 import (
 	"reflect"
@@ -94,7 +94,7 @@ var TCellOutPoint = reflect.TypeOf(CellOutPoint{})
 
 type CellOutPoint struct {
 	Tx_hash H256
-	Index   uint64
+	Index   uint32
 }
 
 var TOutPoint = reflect.TypeOf(OutPoint{})

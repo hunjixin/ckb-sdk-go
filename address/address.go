@@ -1,19 +1,14 @@
-package ckb_sdk_go
+package address
 
 import (
 	"encoding/hex"
 	"github.com/adiabat/bech32"
-	"github.com/dchest/blake2b"
 	"github.com/decred/dcrd/dcrec/secp256k1"
+	"ckb-sdk-go/crypto"
 	"strings"
 )
 
-var (
-	config = &blake2b.Config{
-		Size:   32,
-		Person: []byte("ckb-default-hash"),
-	}
-)
+
 
 type AddressPrefix string
 
@@ -76,9 +71,7 @@ func PublicKeyToAddress(pubkey *secp256k1.PublicKey, option *AddressOptions) str
 
 func generateIdentifier(pubkey *secp256k1.PublicKey) []byte {
 	bytes := pubkey.SerializeCompressed()
-	hash, _ := blake2b.New(config)
-	hash.Write(bytes)
-	return hash.Sum(nil)[0:20]
+	return crypto.Blake20(bytes)
 }
 
 func bech32Address(identifier []byte, addrOption *AddressOptions) string {

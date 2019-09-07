@@ -1,4 +1,4 @@
-package ckb_sdk_go
+package bincode
 
 import (
 	"bytes"
@@ -18,8 +18,8 @@ func NewBinCodeDeSerizlize(b []byte) *BinCodeDeSerizlize {
 	}
 }
 
-func (binCode *BinCodeDeSerizlize) Bool() (reflect.Value, error) {
-	b, err := binCode.buf.ReadByte()
+func (deSerizlize *BinCodeDeSerizlize) Bool() (reflect.Value, error) {
+	b, err := deSerizlize.buf.ReadByte()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -30,54 +30,54 @@ func (binCode *BinCodeDeSerizlize) Bool() (reflect.Value, error) {
 	}
 }
 
-func (binCode *BinCodeDeSerizlize) Int8() (reflect.Value, error) {
-	b, err := binCode.buf.ReadByte()
+func (deSerizlize *BinCodeDeSerizlize) Int8() (reflect.Value, error) {
+	b, err := deSerizlize.buf.ReadByte()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	return reflect.ValueOf(int8(b)), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Int16() (reflect.Value, error) {
-	val := binary.LittleEndian.Uint16(binCode.buf.Next(2))
+func (deSerizlize *BinCodeDeSerizlize) Int16() (reflect.Value, error) {
+	val := binary.LittleEndian.Uint16(deSerizlize.buf.Next(2))
 	return reflect.ValueOf(int16(val)), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Int32() (reflect.Value, error) {
-	val := binary.LittleEndian.Uint32(binCode.buf.Next(4))
+func (deSerizlize *BinCodeDeSerizlize) Int32() (reflect.Value, error) {
+	val := binary.LittleEndian.Uint32(deSerizlize.buf.Next(4))
 	return reflect.ValueOf(int32(val)), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Int64() (reflect.Value, error) {
-	val := binary.LittleEndian.Uint64(binCode.buf.Next(8))
+func (deSerizlize *BinCodeDeSerizlize) Int64() (reflect.Value, error) {
+	val := binary.LittleEndian.Uint64(deSerizlize.buf.Next(8))
 	return reflect.ValueOf(int64(val)), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Uint8() (reflect.Value, error) {
-	b, err := binCode.buf.ReadByte()
+func (deSerizlize *BinCodeDeSerizlize) Uint8() (reflect.Value, error) {
+	b, err := deSerizlize.buf.ReadByte()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	return reflect.ValueOf(b), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Uint16() (reflect.Value, error) {
-	val := binary.LittleEndian.Uint16(binCode.buf.Next(2))
+func (deSerizlize *BinCodeDeSerizlize) Uint16() (reflect.Value, error) {
+	val := binary.LittleEndian.Uint16(deSerizlize.buf.Next(2))
 	return reflect.ValueOf(val), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Uint32() (reflect.Value, error) {
-	val := binary.LittleEndian.Uint32(binCode.buf.Next(4))
+func (deSerizlize *BinCodeDeSerizlize) Uint32() (reflect.Value, error) {
+	val := binary.LittleEndian.Uint32(deSerizlize.buf.Next(4))
 	return reflect.ValueOf(val), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Uint64() (reflect.Value, error) {
-	val := binary.LittleEndian.Uint64(binCode.buf.Next(8))
+func (deSerizlize *BinCodeDeSerizlize) Uint64() (reflect.Value, error) {
+	val := binary.LittleEndian.Uint64(deSerizlize.buf.Next(8))
 	return reflect.ValueOf(val), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Float32() (reflect.Value, error) {
-	val, err := binCode.Uint32()
+func (deSerizlize *BinCodeDeSerizlize) Float32() (reflect.Value, error) {
+	val, err := deSerizlize.Uint32()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -85,8 +85,8 @@ func (binCode *BinCodeDeSerizlize) Float32() (reflect.Value, error) {
 	return reflect.ValueOf(float32Val), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Float64() (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) Float64() (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -98,22 +98,22 @@ func (binCode *BinCodeDeSerizlize) Float64() (reflect.Value, error) {
 
 }*/
 
-func (binCode *BinCodeDeSerizlize) String_() (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) String_() (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	len := val.Uint()
 	strBytes := make([]byte, len)
-	_, err = binCode.buf.Read(strBytes)
+	_, err = deSerizlize.buf.Read(strBytes)
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	return reflect.ValueOf(string(strBytes)), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Array(t reflect.Type) (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) Array(t reflect.Type) (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -121,7 +121,7 @@ func (binCode *BinCodeDeSerizlize) Array(t reflect.Type) (reflect.Value, error) 
 	arrayType := reflect.ArrayOf(len, t)
 	arrayVal := reflect.New(arrayType).Elem()
 	for i := 0; i < len; i++ {
-		val, err = binCode.UnMarshal(t)
+		val, err = deSerizlize.UnMarshal(t)
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
@@ -131,15 +131,15 @@ func (binCode *BinCodeDeSerizlize) Array(t reflect.Type) (reflect.Value, error) 
 	return arrayVal, nil
 }
 
-func (binCode *BinCodeDeSerizlize) Slice(t reflect.Type) (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) Slice(t reflect.Type) (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	len := int(val.Uint())
 	sliceVal := reflect.MakeSlice(t, len, len)
 	for i := 0; i < len; i++ {
-		val, err = binCode.UnMarshal(t.Elem())
+		val, err = deSerizlize.UnMarshal(t.Elem())
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
@@ -149,8 +149,8 @@ func (binCode *BinCodeDeSerizlize) Slice(t reflect.Type) (reflect.Value, error) 
 	return sliceVal, nil
 }
 
-func (binCode *BinCodeDeSerizlize) ArrayBytes() (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) ArrayBytes() (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -160,7 +160,7 @@ func (binCode *BinCodeDeSerizlize) ArrayBytes() (reflect.Value, error) {
 	arrayVal := reflect.New(arrayType).Elem()
 
 	bytes := make([]byte, len)
-	_, err = binCode.buf.Read(bytes)
+	_, err = deSerizlize.buf.Read(bytes)
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -168,29 +168,29 @@ func (binCode *BinCodeDeSerizlize) ArrayBytes() (reflect.Value, error) {
 	return arrayVal, nil
 }
 
-func (binCode *BinCodeDeSerizlize) SliceBytes() (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) SliceBytes() (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	len := val.Uint()
 	bytes := make([]byte, len)
-	_, err = binCode.buf.Read(bytes)
+	_, err = deSerizlize.buf.Read(bytes)
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
 	return reflect.ValueOf(bytes), nil
 }
 
-func (binCode *BinCodeDeSerizlize) Null() (reflect.Value, error) {
-	return binCode.Bool()
+func (deSerizlize *BinCodeDeSerizlize) Null() (reflect.Value, error) {
+	return deSerizlize.Bool()
 }
 
-func (binCode *BinCodeDeSerizlize) Struct(t reflect.Type) (reflect.Value, error) {
+func (deSerizlize *BinCodeDeSerizlize) Struct(t reflect.Type) (reflect.Value, error) {
 	valT := reflect.New(t).Elem()
 	for i := 0; i < valT.NumField(); i++ {
 		field := valT.Field(i)
-		val, err := binCode.UnMarshal(field.Type())
+		val, err := deSerizlize.UnMarshal(field.Type())
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
@@ -200,8 +200,8 @@ func (binCode *BinCodeDeSerizlize) Struct(t reflect.Type) (reflect.Value, error)
 	}
 	return valT, nil
 }
-func (binCode *BinCodeDeSerizlize) Map(t reflect.Type) (reflect.Value, error) {
-	val, err := binCode.Uint64()
+func (deSerizlize *BinCodeDeSerizlize) Map(t reflect.Type) (reflect.Value, error) {
+	val, err := deSerizlize.Uint64()
 	if err != nil {
 		return reflect.ValueOf(nil), err
 	}
@@ -210,11 +210,11 @@ func (binCode *BinCodeDeSerizlize) Map(t reflect.Type) (reflect.Value, error) {
 	keyType := t.Key()
 	valType := t.Elem()
 	for i := 0; i < int(len); i++ {
-		key, err := binCode.UnMarshal(keyType)
+		key, err := deSerizlize.UnMarshal(keyType)
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
-		val, err := binCode.UnMarshal(valType)
+		val, err := deSerizlize.UnMarshal(valType)
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
@@ -241,59 +241,59 @@ var (
 	TFloat64 = reflect.TypeOf(float64(0))
 )
 
-func (binCode *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, error) {
+func (deSerizlize *BinCodeDeSerizlize) UnMarshal(t reflect.Type) (reflect.Value, error) {
 	var err error
 	var val reflect.Value
 	if t.Kind() != reflect.Ptr && t.Implements(nilUnmarshal) {
-		val, err = reflect.New(t).Elem().Interface().(UnMarshaler).UnMarshal(binCode)
+		val, err = val.Interface().(UnMarshaler).UnMarshal(deSerizlize)
 	} else {
 		switch t.Kind() {
 		case reflect.String:
-			val, err = binCode.String_()
+			val, err = deSerizlize.String_()
 		case reflect.Array:
 			if t.Elem().Kind() == reflect.Uint8 {
-				val, err = binCode.ArrayBytes()
+				val, err = deSerizlize.ArrayBytes()
 			} else {
-				val, err = binCode.Array(t.Elem())
+				val, err = deSerizlize.Array(t.Elem())
 			}
 		case reflect.Slice:
 			if t.Elem().Kind() == reflect.Uint8 {
-				val, err = binCode.SliceBytes()
+				val, err = deSerizlize.SliceBytes()
 			} else {
-				val, err = binCode.Slice(t)
+				val, err = deSerizlize.Slice(t)
 			}
 		case reflect.Bool:
-			val, err = binCode.Bool()
+			val, err = deSerizlize.Bool()
 		case reflect.Float32:
-			val, err = binCode.Float32()
+			val, err = deSerizlize.Float32()
 		case reflect.Float64:
-			val, err = binCode.Float64()
+			val, err = deSerizlize.Float64()
 		case reflect.Int8:
-			val, err = binCode.Int8()
+			val, err = deSerizlize.Int8()
 		case reflect.Int16:
-			val, err = binCode.Int16()
+			val, err = deSerizlize.Int16()
 		case reflect.Int32:
-			val, err = binCode.Int32()
+			val, err = deSerizlize.Int32()
 		case reflect.Int64:
-			val, err = binCode.Int64()
+			val, err = deSerizlize.Int64()
 		case reflect.Uint8:
-			val, err = binCode.Uint8()
+			val, err = deSerizlize.Uint8()
 		case reflect.Uint16:
-			val, err = binCode.Uint16()
+			val, err = deSerizlize.Uint16()
 		case reflect.Uint32:
-			val, err = binCode.Uint32()
+			val, err = deSerizlize.Uint32()
 		case reflect.Uint64:
-			val, err = binCode.Uint64()
+			val, err = deSerizlize.Uint64()
 		case reflect.Struct:
-			val, err = binCode.Struct(t)
+			val, err = deSerizlize.Struct(t)
 		case reflect.Ptr:
-			val, err = binCode.Uint8()
+			val, err = deSerizlize.Uint8()
 			if err == nil {
 				if val.Uint() == 0 {
 					val = reflect.ValueOf(nil)
 				} else {
 					elem := t.Elem()
-					val, err = binCode.UnMarshal(elem)
+					val, err = deSerizlize.UnMarshal(elem)
 					val = val.Addr()
 				}
 			}

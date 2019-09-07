@@ -85,26 +85,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	collector := &TypeCollecor{map[string]string{
+	collector := &TypeCollector{map[string]string{
 		"ScriptHashType":"RpcScriptHashType",
 		"Witness":"RpcWitness",
+		"String": "string",
+		"JsonBytes": "string",
+		"AlertId": "string",
+		"Version": "string",
+		"BlockNumber": "string",
+		"Capacity": "string",
+		"ProposalShortId": "string",
+		"Timestamp": "string",
+		"Cycle": "string",
+		"Unsigned": "string",
+		"AlertPriority": "string",
+		"EpochNumber": "string",
+		"U256": "string",
+		"Hash": "string",
+		"H256": "string",
+
 	}}
 	collector.Walk(ast)
-	collector.newTypeMap["String"] = "string"
-	collector.newTypeMap["JsonBytes"] = "string"
-	collector.newTypeMap["AlertId"] = "string"
-	collector.newTypeMap["Version"] = "string"
-	collector.newTypeMap["BlockNumber"] = "string"
-	collector.newTypeMap["Capacity"] = "string"
-	collector.newTypeMap["ProposalShortId"] = "string"
-	collector.newTypeMap["Timestamp"] = "string"
-	collector.newTypeMap["Cycle"] = "string"
-	collector.newTypeMap["Unsigned"] = "string"
-	collector.newTypeMap["AlertPriority"] = "string"
-	collector.newTypeMap["EpochNumber"] = "string"
-	collector.newTypeMap["U256"] = "string"
-	collector.newTypeMap["Hash"] = "string"
-	collector.newTypeMap["H256"] = "string"
+
 
 	simpleType := map[string]bool{
 		"int":             true,
@@ -132,6 +134,22 @@ func main() {
 		"U256":            true,
 		"ScriptHashType":            true,
 	}
+	codeBuf := bytes.NewBuffer([]byte{})
+	rpcGenerate := &RpcGenerate{
+		PackageName: "ckb_sdk_go",
+		Importer: []string{
+			"reflect",
+			"github.com/ybbus/jsonrpc",
+			//"strconv",
+		},
+		Structs:     []string{},
+		CodeBuffer:  codeBuf,
+		Ast:         ast,
+		RpcTypeMap:  collector.newTypeMap,
+		SimpleType:  simpleType,
+	}
+	rpcGenerate.Walk(rpcGenerate.Ast)
+	rpcGenerate.SaveTo("./core/rpctypes.go", "./client.go" )
 
 	realType := map[string]*TypeConvert{
 		"AlertId":         Uint32Convert,
@@ -152,21 +170,14 @@ func main() {
 		"String":    StringConvert,
 		"JsonBytes": SliceConvert,
 	}
-
-	codeBuf := bytes.NewBuffer([]byte{})
-	g := &RpcGenerate{
-		PackageName: "ckb_sdk_go",
+	typeGenerate := &TypeGenerate{
+		PackageName: "core",
 		Importer: []string{
-			//"encoding/json",
-			"github.com/ybbus/jsonrpc",
-			//"strconv",
-		},
-		Structs:     []string{},
-		CodeBuffer:  codeBuf,
-		Ast:         ast,
-		RpcTypeMap:  collector.newTypeMap,
-		SimpleType:  simpleType,
-		RealTypeMap: realType,
+			"reflect",
+			},
+		Ast:     ast,
+		TypeMap: realType,
 	}
-	g.SaveTo("./rpctypes.go", "./client.go", "./types.go")
+	typeGenerate.Walk(typeGenerate.Ast)
+	typeGenerate.SaveTo("./core/types.go")
 }

@@ -1,6 +1,8 @@
 package ckb_sdk_go
 
 import (
+	"ckb-sdk-go/bincode"
+	"ckb-sdk-go/core"
 	"encoding/hex"
 	"github.com/decred/dcrd/dcrec/secp256k1"
 	"reflect"
@@ -11,17 +13,17 @@ import (
 func Test_UnMarshal(t *testing.T) {
 	rawTxStr := "170000000000000000000000010000000000000001420000000000000030783030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303000000000007B0000000000000001000000000000000088526A740000000300000000000000010203000000000000000042000000000000003078303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030300000000000"
 	rawTxBytes, _ := hex.DecodeString(rawTxStr)
-	tRawTx := reflect.TypeOf(RawTransaction{})
-	dddd, err := UnMarshal(rawTxBytes, tRawTx)
+	tRawTx := reflect.TypeOf(core.RawTransaction{})
+	dddd, err := bincode.UnMarshal(rawTxBytes, tRawTx)
 	if err != nil {
 		t.Error(err)
 	}
-	rawTx := dddd.(RawTransaction)
+	rawTx := dddd.(core.RawTransaction)
 	if rawTx.Inputs[0].Since != 123 {
 		t.Errorf("expect since %d but got %d", 123, rawTx.Inputs[0].Since)
 	}
 
-	marshalBytes, err := Marshal(dddd)
+	marshalBytes, err := bincode.Marshal(dddd)
 	if err != nil {
 		t.Error(err)
 	}
@@ -33,17 +35,17 @@ func Test_UnMarshal(t *testing.T) {
 func Test_TxHash(t *testing.T) {
 	builder := new(TransactionBuilder).
 		SetVersion(23).
-		AppendOutput(CellOutput{
+		AppendOutput(core.CellOutput{
 			Capacity: 500000000000, //5000 * 00000000
 			Data:     []byte{1, 2, 3},
-			Lock:     Script{},
+			Lock:     core.Script{},
 			Type_:    nil,
 		}).
-		AppendInput(CellInput{
-			Previous_output: OutPoint{
+		AppendInput(core.CellInput{
+			Previous_output: core.OutPoint{
 				Block_hash: nil,
-				Cell: &CellOutPoint{
-					Tx_hash: ZeroH256,
+				Cell: &core.CellOutPoint{
+					Tx_hash: core.ZeroH256,
 					Index:   0,
 				},
 			},
@@ -70,5 +72,5 @@ func Test_TxHash(t *testing.T) {
 		t.Errorf("expect witness %s but got %s", expectedWitnessHash, witnesshashStr)
 	}
 	priv, _ := secp256k1.GeneratePrivateKey()
-	SignTx(*builder, priv)
+	SignTx(builder, priv)
 }

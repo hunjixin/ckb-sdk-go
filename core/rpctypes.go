@@ -1,4 +1,4 @@
-package ckb_sdk_go
+package core
 
 type RpcAlert struct {
 	Id           string   `json:"id"`
@@ -86,7 +86,7 @@ type RpcCellInput struct {
 }
 
 type RpcWitness struct {
-	data []string
+	Data []string			`json:"data"`
 }
 
 type RpcTransaction struct {

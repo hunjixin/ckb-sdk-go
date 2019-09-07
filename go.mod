@@ -1,4 +1,4 @@
-module hello
+module ckb-sdk-go
 
 go 1.12
 

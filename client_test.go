@@ -1,6 +1,7 @@
 package ckb_sdk_go
 
 import (
+	"ckb-sdk-go/core"
 	"reflect"
 	"testing"
 )
@@ -11,7 +12,7 @@ var (
 
 func TestCkbClient_CalculateDaoMaximumWithdraw(t *testing.T) {
 	type args struct {
-		_out_point RpcOutPoint
+		_out_point core.RpcOutPoint
 		_hash      string
 	}
 	tests := []struct {
@@ -38,7 +39,7 @@ func TestCkbClient_CalculateDaoMaximumWithdraw(t *testing.T) {
 
 func TestCkbClient_ComputeScriptHash(t *testing.T) {
 	type args struct {
-		script RpcScript
+		script core.RpcScript
 	}
 	tests := []struct {
 		name    string
@@ -64,7 +65,7 @@ func TestCkbClient_ComputeScriptHash(t *testing.T) {
 
 func TestCkbClient_ComputeTransactionHash(t *testing.T) {
 	type args struct {
-		tx RpcTransaction
+		tx core.RpcTransaction
 	}
 	tests := []struct {
 		name    string
@@ -110,12 +111,12 @@ func TestCkbClient_DeindexLockHash(t *testing.T) {
 
 func TestCkbClient_DryRunTransaction(t *testing.T) {
 	type args struct {
-		_tx RpcTransaction
+		_tx core.RpcTransaction
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcDryRunResult
+		want    *core.RpcDryRunResult
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -138,7 +139,7 @@ func TestCkbClient_GetBannedAddresses(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcBannedAddress
+		want    *core.RpcBannedAddress
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -164,7 +165,7 @@ func TestCkbClient_GetBlock(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcBlockView
+		want    *core.RpcBlockView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -190,13 +191,13 @@ func TestCkbClient_GetBlockByNumber(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcBlockView
+		want    *core.RpcBlockView
 		wantErr bool
 	}{
 		{
 			"getblockbynumber",
 			args{"1"},
-			&RpcBlockView{},
+			&core.RpcBlockView{},
 			false,
 		},
 	}
@@ -249,7 +250,7 @@ func TestCkbClient_GetBlockTemplate(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcBlockTemplate
+		want    *core.RpcBlockTemplate
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -272,7 +273,7 @@ func TestCkbClient_GetBlockchainInfo(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcChainInfo
+		want    *core.RpcChainInfo
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -298,7 +299,7 @@ func TestCkbClient_GetCellbaseOutputCapacityDetails(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcBlockRewardView
+		want    *core.RpcBlockRewardView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -326,7 +327,7 @@ func TestCkbClient_GetCellsByLockHash(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcCellOutputWithOutPoint
+		want    *core.RpcCellOutputWithOutPoint
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -349,7 +350,7 @@ func TestCkbClient_GetCurrentEpoch(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcEpochView
+		want    *core.RpcEpochView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -375,7 +376,7 @@ func TestCkbClient_GetEpochByNumber(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcEpochView
+		want    *core.RpcEpochView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -401,7 +402,7 @@ func TestCkbClient_GetHeader(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcHeaderView
+		want    *core.RpcHeaderView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -427,7 +428,7 @@ func TestCkbClient_GetHeaderByNumber(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcHeaderView
+		want    *core.RpcHeaderView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -448,12 +449,12 @@ func TestCkbClient_GetHeaderByNumber(t *testing.T) {
 
 func TestCkbClient_GetLiveCell(t *testing.T) {
 	type args struct {
-		_out_point RpcOutPoint
+		_out_point core.RpcOutPoint
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcCellWithStatus
+		want    *core.RpcCellWithStatus
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -482,7 +483,7 @@ func TestCkbClient_GetLiveCellsByLockHash(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcLiveCell
+		want    *core.RpcLiveCell
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -505,7 +506,7 @@ func TestCkbClient_GetLockHashIndexStates(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcLockHashIndexState
+		want    *core.RpcLockHashIndexState
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -528,7 +529,7 @@ func TestCkbClient_GetPeers(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcNode
+		want    *core.RpcNode
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -551,7 +552,7 @@ func TestCkbClient_GetPeersState(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcPeerState
+		want    *core.RpcPeerState
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -597,7 +598,7 @@ func TestCkbClient_GetTipHeader(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcHeaderView
+		want    *core.RpcHeaderView
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -623,10 +624,17 @@ func TestCkbClient_GetTransaction(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcTransactionWithStatus
+		want    *core.RpcTransactionWithStatus
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			"XX",
+			args{
+				"0xe419f1553115b1d883830d94a60d80c64f450b73a7140be459fa593834a26828",
+			},
+			nil,
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -652,7 +660,7 @@ func TestCkbClient_GetTransactionsByLockHash(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcCellTransaction
+		want    *core.RpcCellTransaction
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -679,7 +687,7 @@ func TestCkbClient_IndexLockHash(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *RpcLockHashIndexState
+		want    *core.RpcLockHashIndexState
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -702,7 +710,7 @@ func TestCkbClient_LocalNodeInfo(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcNode
+		want    *core.RpcNode
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -723,7 +731,7 @@ func TestCkbClient_LocalNodeInfo(t *testing.T) {
 
 func TestCkbClient_SendAlert(t *testing.T) {
 	type args struct {
-		_alert RpcAlert
+		_alert core.RpcAlert
 	}
 	tests := []struct {
 		name    string
@@ -743,7 +751,7 @@ func TestCkbClient_SendAlert(t *testing.T) {
 
 func TestCkbClient_SendTransaction(t *testing.T) {
 	type args struct {
-		_tx RpcTransaction
+		_tx core.RpcTransaction
 	}
 	tests := []struct {
 		name    string
@@ -794,7 +802,7 @@ func TestCkbClient_SetBan(t *testing.T) {
 func TestCkbClient_SubmitBlock(t *testing.T) {
 	type args struct {
 		_work_id string
-		_data    RpcBlock
+		_data    core.RpcBlock
 	}
 	tests := []struct {
 		name    string
@@ -822,7 +830,7 @@ func TestCkbClient_TxPoolInfo(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		want    *RpcTxPoolInfo
+		want    *core.RpcTxPoolInfo
 		wantErr bool
 	}{
 		// TODO: Add test cases.
