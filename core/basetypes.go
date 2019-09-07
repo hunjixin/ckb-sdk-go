@@ -4,6 +4,7 @@ import (
 	"ckb-sdk-go/bincode"
 	"encoding/hex"
 	"reflect"
+	"strings"
 )
 
 type Status string
@@ -67,6 +68,7 @@ func (h256 *H256) SetBytes(h256Bytes []byte) {
 }
 
 func StringToHash(str string) *H256 {
+	str = strings.ReplaceAll(str,"0x","")
 	hbytes,_ := hex.DecodeString(str)
 	h256 := &H256{}
 	h256.SetBytes(hbytes)

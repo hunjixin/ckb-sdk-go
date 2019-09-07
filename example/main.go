@@ -23,10 +23,10 @@ func main() {
 	builder.Deps = []core.OutPoint{
 		{
 			Cell:       &core.CellOutPoint{
-				Tx_hash :*ckb_sdk_go.StringToHash("41ec4d87557b87e9e5c6ff942e8f0e34e40f8347e3a84587ab4c04eebeed7791"),
+				Tx_hash :*core.StringToHash("41ec4d87557b87e9e5c6ff942e8f0e34e40f8347e3a84587ab4c04eebeed7791"),
 				Index   :1,
 			},
-			Block_hash:  ckb_sdk_go.StringToHash("1e673afbff501eaf0b43f6f5d1f505374a5db4c689855668e51376885c4d0ec6"),
+			Block_hash:  core.StringToHash("1e673afbff501eaf0b43f6f5d1f505374a5db4c689855668e51376885c4d0ec6"),
 		},
 	}
 
@@ -34,7 +34,7 @@ func main() {
 		{
 			Previous_output : core.OutPoint{
 				Cell:       &core.CellOutPoint{
-					Tx_hash :*ckb_sdk_go.StringToHash("8353ffa58e5b13001ee5c480db19b92e5f5e300862dc865bf73a895b8e56a4c7"),
+					Tx_hash :*core.StringToHash("8353ffa58e5b13001ee5c480db19b92e5f5e300862dc865bf73a895b8e56a4c7"),
 					Index   :0,
 				},
 				Block_hash: nil,
@@ -50,7 +50,7 @@ func main() {
 			Data:     []byte{},
 			Lock:     core.Script{
 				Args    :   [][]byte{arg},
-				Code_hash : *ckb_sdk_go.StringToHash("54811ce986d5c3e57eaafab22cdd080e32209e39590e204a99b32935f835a13c"),
+				Code_hash : *core.StringToHash("54811ce986d5c3e57eaafab22cdd080e32209e39590e204a99b32935f835a13c"),
 				Hash_type : core.Data,
 			},
 			Type_:    nil,
