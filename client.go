@@ -161,14 +161,14 @@ func (ckbClient *CkbClient) GetEpochByNumber(number string) (*core.RpcEpochView,
 
 }
 
-func (ckbClient *CkbClient) GetCellbaseOutputCapacityDetails(_hash string) (*core.RpcBlockRewardView, error) {
-	rpcblockrewardview := &core.RpcBlockRewardView{}
-	err := ckbClient.client.CallFor(rpcblockrewardview, "get_cellbase_output_capacity_details", _hash)
+func (ckbClient *CkbClient) GetCellbaseOutputCapacityDetails(_hash string) (*core.RpcBlockReward, error) {
+	rpcblockreward := &core.RpcBlockReward{}
+	err := ckbClient.client.CallFor(rpcblockreward, "get_cellbase_output_capacity_details", _hash)
 
 	if err != nil {
 		return nil, err
 	}
-	return rpcblockrewardview, nil
+	return rpcblockreward, nil
 
 }
 
@@ -382,5 +382,53 @@ func (ckbClient *CkbClient) GetPeersState() (*core.RpcPeerState, error) {
 		return nil, err
 	}
 	return rpcpeerstate, nil
+
+}
+
+func (ckbClient *CkbClient) AddNode(peer_id string, address string) error {
+	res, err := ckbClient.client.Call("add_node", peer_id, address)
+
+	if err != nil {
+		return err
+	}
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+
+}
+
+func (ckbClient *CkbClient) RemoveNode(peer_id string) error {
+	res, err := ckbClient.client.Call("remove_node", peer_id)
+
+	if err != nil {
+		return err
+	}
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+
+}
+
+func (ckbClient *CkbClient) ProcessBlockWithoutVerify(data core.RpcBlock) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "process_block_without_verify", data)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
+
+}
+
+func (ckbClient *CkbClient) BroadcastTransaction(transaction core.RpcTransaction) (*string, error) {
+	string := string("")
+	err := ckbClient.client.CallFor(&string, "broadcast_transaction", transaction)
+
+	if err != nil {
+		return nil, err
+	}
+	return &string, nil
 
 }

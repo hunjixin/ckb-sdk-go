@@ -5,19 +5,53 @@ import (
 )
 
 var TAlert = reflect.TypeOf(Alert{})
+var TAlertMessage = reflect.TypeOf(AlertMessage{})
+var TBlockTemplate = reflect.TypeOf(BlockTemplate{})
+var TUncleTemplate = reflect.TypeOf(UncleTemplate{})
+var TCellbaseTemplate = reflect.TypeOf(CellbaseTemplate{})
+var TTransactionTemplate = reflect.TypeOf(TransactionTemplate{})
+var TScript = reflect.TypeOf(Script{})
+var TCellOutput = reflect.TypeOf(CellOutput{})
+var TOutPoint = reflect.TypeOf(OutPoint{})
+var TCellInput = reflect.TypeOf(CellInput{})
+var TWitness = reflect.TypeOf(Witness{})
+var TCellDep = reflect.TypeOf(CellDep{})
+var TTransaction = reflect.TypeOf(Transaction{})
+var TTransactionView = reflect.TypeOf(TransactionView{})
+var TTransactionWithStatus = reflect.TypeOf(TransactionWithStatus{})
+var TTxStatus = reflect.TypeOf(TxStatus{})
+var THeader = reflect.TypeOf(Header{})
+var THeaderView = reflect.TypeOf(HeaderView{})
+var TUncleBlock = reflect.TypeOf(UncleBlock{})
+var TUncleBlockView = reflect.TypeOf(UncleBlockView{})
+var TBlock = reflect.TypeOf(Block{})
+var TBlockView = reflect.TypeOf(BlockView{})
+var TEpochView = reflect.TypeOf(EpochView{})
+var TBlockReward = reflect.TypeOf(BlockReward{})
+var TCellOutputWithOutPoint = reflect.TypeOf(CellOutputWithOutPoint{})
+var TCellWithStatus = reflect.TypeOf(CellWithStatus{})
+var TChainInfo = reflect.TypeOf(ChainInfo{})
+var TDryRunResult = reflect.TypeOf(DryRunResult{})
+var TLiveCell = reflect.TypeOf(LiveCell{})
+var TCellTransaction = reflect.TypeOf(CellTransaction{})
+var TTransactionPoint = reflect.TypeOf(TransactionPoint{})
+var TLockHashIndexState = reflect.TypeOf(LockHashIndexState{})
+var TNode = reflect.TypeOf(Node{})
+var TNodeAddress = reflect.TypeOf(NodeAddress{})
+var TBannedAddress = reflect.TypeOf(BannedAddress{})
+var TTxPoolInfo = reflect.TypeOf(TxPoolInfo{})
+var TPeerState = reflect.TypeOf(PeerState{})
 
 type Alert struct {
 	Id           uint32
 	Cancel       uint32
-	Signatures   [][]byte
 	Min_version  *string
 	Max_version  *string
 	Priority     uint32
 	Notice_until uint64
 	Message      string
+	Signatures   [][]byte
 }
-
-var TAlertMessage = reflect.TypeOf(AlertMessage{})
 
 type AlertMessage struct {
 	Id           uint32
@@ -25,8 +59,6 @@ type AlertMessage struct {
 	Notice_until uint64
 	Message      string
 }
-
-var TBlockTemplate = reflect.TypeOf(BlockTemplate{})
 
 type BlockTemplate struct {
 	Version            uint32
@@ -46,8 +78,6 @@ type BlockTemplate struct {
 	Dao                []byte
 }
 
-var TUncleTemplate = reflect.TypeOf(UncleTemplate{})
-
 type UncleTemplate struct {
 	Hash      H256
 	Required  bool
@@ -55,15 +85,11 @@ type UncleTemplate struct {
 	Header    Header
 }
 
-var TCellbaseTemplate = reflect.TypeOf(CellbaseTemplate{})
-
 type CellbaseTemplate struct {
 	Hash   H256
 	Cycles *uint64
 	Data   Transaction
 }
-
-var TTransactionTemplate = reflect.TypeOf(TransactionTemplate{})
 
 type TransactionTemplate struct {
 	Hash     H256
@@ -73,86 +99,58 @@ type TransactionTemplate struct {
 	Data     Transaction
 }
 
-var TScript = reflect.TypeOf(Script{})
-
 type Script struct {
 	Args      [][]byte
 	Code_hash H256
 	Hash_type ScriptHashType
 }
 
-var TCellOutput = reflect.TypeOf(CellOutput{})
-
 type CellOutput struct {
 	Capacity uint64
-	Data     []byte
 	Lock     Script
 	Type_    *Script
 }
 
-var TCellOutPoint = reflect.TypeOf(CellOutPoint{})
-
-type CellOutPoint struct {
-	Tx_hash H256
-	Index   uint32
-}
-
-var TOutPoint = reflect.TypeOf(OutPoint{})
-
 type OutPoint struct {
-	Cell       *CellOutPoint
-	Block_hash *H256
+	Tx_hash H256
+	Index   uint64
 }
-
-var TCellInput = reflect.TypeOf(CellInput{})
 
 type CellInput struct {
 	Previous_output OutPoint
 	Since           uint64
 }
 
-var TWitness = reflect.TypeOf(Witness{})
 
-
-var TTransaction = reflect.TypeOf(Transaction{})
-
-type Transaction struct {
-	Version   uint32
-	Deps      []OutPoint
-	Inputs    []CellInput
-	Outputs   []CellOutput
-	Witnesses []Witness
+type CellDep struct {
+	out_point OutPoint
+	dep_type  DepType
 }
 
-var TTransactionView = reflect.TypeOf(TransactionView{})
+type Transaction struct {
+	Version      uint32
+	Cell_deps    []CellDep
+	Header_deps  []H256
+	Inputs       []CellInput
+	Outputs      []CellOutput
+	Witnesses    []Witness
+	Outputs_data [][]byte
+}
 
 type TransactionView struct {
 	Inner Transaction
 	Hash  H256
 }
 
-var TTransactionWithStatus = reflect.TypeOf(TransactionWithStatus{})
-
 type TransactionWithStatus struct {
 	Transaction TransactionView
 	Tx_status   TxStatus
 }
 
-var TTxStatus = reflect.TypeOf(TxStatus{})
-
 type TxStatus struct {
 	Status     Status
 	Block_hash *H256
 }
-
-var TSeal = reflect.TypeOf(Seal{})
-
-type Seal struct {
-	Nonce uint64
-	Proof []byte
-}
-
-var THeader = reflect.TypeOf(Header{})
 
 type Header struct {
 	Version           uint32
@@ -167,31 +165,23 @@ type Header struct {
 	Uncles_hash       H256
 	Uncles_count      uint64
 	Dao               []byte
-	Seal              Seal
+	Nonce             uint64
 }
-
-var THeaderView = reflect.TypeOf(HeaderView{})
 
 type HeaderView struct {
 	Inner Header
 	Hash  H256
 }
 
-var TUncleBlock = reflect.TypeOf(UncleBlock{})
-
 type UncleBlock struct {
 	Header    Header
 	Proposals [][10]byte
 }
 
-var TUncleBlockView = reflect.TypeOf(UncleBlockView{})
-
 type UncleBlockView struct {
 	Header    HeaderView
 	Proposals [][10]byte
 }
-
-var TBlock = reflect.TypeOf(Block{})
 
 type Block struct {
 	Header       Header
@@ -200,8 +190,6 @@ type Block struct {
 	Proposals    [][10]byte
 }
 
-var TBlockView = reflect.TypeOf(BlockView{})
-
 type BlockView struct {
 	Header       HeaderView
 	Uncles       []UncleBlockView
@@ -209,19 +197,14 @@ type BlockView struct {
 	Proposals    [][10]byte
 }
 
-var TEpochView = reflect.TypeOf(EpochView{})
-
 type EpochView struct {
 	Number       uint64
-	Epoch_reward uint64
 	Start_number uint64
 	Length       uint64
 	Difficulty   U256
 }
 
-var TBlockRewardView = reflect.TypeOf(BlockRewardView{})
-
-type BlockRewardView struct {
+type BlockReward struct {
 	Total           uint64
 	Primary         uint64
 	Secondary       uint64
@@ -229,22 +212,17 @@ type BlockRewardView struct {
 	Proposal_reward uint64
 }
 
-var TCellOutputWithOutPoint = reflect.TypeOf(CellOutputWithOutPoint{})
-
 type CellOutputWithOutPoint struct {
-	Out_point OutPoint
-	Capacity  uint64
-	Lock      Script
+	Out_point  OutPoint
+	Block_hash H256
+	Capacity   uint64
+	Lock       Script
 }
-
-var TCellWithStatus = reflect.TypeOf(CellWithStatus{})
 
 type CellWithStatus struct {
 	Cell   *CellOutput
 	Status string
 }
-
-var TChainInfo = reflect.TypeOf(ChainInfo{})
 
 type ChainInfo struct {
 	Chain                     string
@@ -255,27 +233,19 @@ type ChainInfo struct {
 	Alerts                    []AlertMessage
 }
 
-var TDryRunResult = reflect.TypeOf(DryRunResult{})
-
 type DryRunResult struct {
 	Cycles uint64
 }
-
-var TLiveCell = reflect.TypeOf(LiveCell{})
 
 type LiveCell struct {
 	Created_by  TransactionPoint
 	Cell_output CellOutput
 }
 
-var TCellTransaction = reflect.TypeOf(CellTransaction{})
-
 type CellTransaction struct {
 	Created_by  TransactionPoint
 	Consumed_by *TransactionPoint
 }
-
-var TTransactionPoint = reflect.TypeOf(TransactionPoint{})
 
 type TransactionPoint struct {
 	Block_number uint64
@@ -283,15 +253,11 @@ type TransactionPoint struct {
 	Index        uint64
 }
 
-var TLockHashIndexState = reflect.TypeOf(LockHashIndexState{})
-
 type LockHashIndexState struct {
 	Lock_hash    H256
 	Block_number uint64
 	Block_hash   H256
 }
-
-var TNode = reflect.TypeOf(Node{})
 
 type Node struct {
 	Version     string
@@ -300,14 +266,10 @@ type Node struct {
 	Is_outbound *bool
 }
 
-var TNodeAddress = reflect.TypeOf(NodeAddress{})
-
 type NodeAddress struct {
 	Address string
 	Score   uint64
 }
-
-var TBannedAddress = reflect.TypeOf(BannedAddress{})
 
 type BannedAddress struct {
 	Address    string
@@ -315,8 +277,6 @@ type BannedAddress struct {
 	Ban_reason string
 	Created_at uint64
 }
-
-var TTxPoolInfo = reflect.TypeOf(TxPoolInfo{})
 
 type TxPoolInfo struct {
 	Pending             uint64
@@ -326,8 +286,6 @@ type TxPoolInfo struct {
 	Total_tx_cycles     uint64
 	Last_txs_updated_at uint64
 }
-
-var TPeerState = reflect.TypeOf(PeerState{})
 
 type PeerState struct {
 	peer             uint64

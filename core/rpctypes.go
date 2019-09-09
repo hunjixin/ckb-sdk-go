@@ -1,14 +1,54 @@
 package core
 
+import "reflect"
+
+var TRpcAlert = reflect.TypeOf(RpcAlert{})
+var TRpcAlertMessage = reflect.TypeOf(RpcAlertMessage{})
+var TRpcBlockTemplate = reflect.TypeOf(RpcBlockTemplate{})
+var TRpcUncleTemplate = reflect.TypeOf(RpcUncleTemplate{})
+var TRpcCellbaseTemplate = reflect.TypeOf(RpcCellbaseTemplate{})
+var TRpcTransactionTemplate = reflect.TypeOf(RpcTransactionTemplate{})
+var TRpcScript = reflect.TypeOf(RpcScript{})
+var TRpcCellOutput = reflect.TypeOf(RpcCellOutput{})
+var TRpcOutPoint = reflect.TypeOf(RpcOutPoint{})
+var TRpcCellInput = reflect.TypeOf(RpcCellInput{})
+var TRpcWitness = reflect.TypeOf(RpcWitness{})
+var TRpcCellDep = reflect.TypeOf(RpcCellDep{})
+var TRpcTransaction = reflect.TypeOf(RpcTransaction{})
+var TRpcTransactionView = reflect.TypeOf(RpcTransactionView{})
+var TRpcTransactionWithStatus = reflect.TypeOf(RpcTransactionWithStatus{})
+var TRpcTxStatus = reflect.TypeOf(RpcTxStatus{})
+var TRpcHeader = reflect.TypeOf(RpcHeader{})
+var TRpcHeaderView = reflect.TypeOf(RpcHeaderView{})
+var TRpcUncleBlock = reflect.TypeOf(RpcUncleBlock{})
+var TRpcUncleBlockView = reflect.TypeOf(RpcUncleBlockView{})
+var TRpcBlock = reflect.TypeOf(RpcBlock{})
+var TRpcBlockView = reflect.TypeOf(RpcBlockView{})
+var TRpcEpochView = reflect.TypeOf(RpcEpochView{})
+var TRpcBlockReward = reflect.TypeOf(RpcBlockReward{})
+var TRpcCellOutputWithOutPoint = reflect.TypeOf(RpcCellOutputWithOutPoint{})
+var TRpcCellWithStatus = reflect.TypeOf(RpcCellWithStatus{})
+var TRpcChainInfo = reflect.TypeOf(RpcChainInfo{})
+var TRpcDryRunResult = reflect.TypeOf(RpcDryRunResult{})
+var TRpcLiveCell = reflect.TypeOf(RpcLiveCell{})
+var TRpcCellTransaction = reflect.TypeOf(RpcCellTransaction{})
+var TRpcTransactionPoint = reflect.TypeOf(RpcTransactionPoint{})
+var TRpcLockHashIndexState = reflect.TypeOf(RpcLockHashIndexState{})
+var TRpcNode = reflect.TypeOf(RpcNode{})
+var TRpcNodeAddress = reflect.TypeOf(RpcNodeAddress{})
+var TRpcBannedAddress = reflect.TypeOf(RpcBannedAddress{})
+var TRpcTxPoolInfo = reflect.TypeOf(RpcTxPoolInfo{})
+var TRpcPeerState = reflect.TypeOf(RpcPeerState{})
+
 type RpcAlert struct {
 	Id           string   `json:"id"`
 	Cancel       string   `json:"cancel"`
-	Signatures   []string `json:"signatures"`
 	Min_version  *string  `json:"min_version"`
 	Max_version  *string  `json:"max_version"`
 	Priority     string   `json:"priority"`
 	Notice_until string   `json:"notice_until"`
 	Message      string   `json:"message"`
+	Signatures   []string `json:"signatures"`
 }
 
 type RpcAlertMessage struct {
@@ -65,19 +105,13 @@ type RpcScript struct {
 
 type RpcCellOutput struct {
 	Capacity string     `json:"capacity"`
-	Data     string     `json:"data"`
 	Lock     RpcScript  `json:"lock"`
 	Type_    *RpcScript `json:"type_"`
 }
 
-type RpcCellOutPoint struct {
+type RpcOutPoint struct {
 	Tx_hash string `json:"tx_hash"`
 	Index   string `json:"index"`
-}
-
-type RpcOutPoint struct {
-	Cell       *RpcCellOutPoint `json:"cell"`
-	Block_hash *string          `json:"block_hash"`
 }
 
 type RpcCellInput struct {
@@ -86,15 +120,22 @@ type RpcCellInput struct {
 }
 
 type RpcWitness struct {
-	Data []string			`json:"data"`
+	data []string
+}
+
+type RpcCellDep struct {
+	out_point RpcOutPoint
+	dep_type  DepType
 }
 
 type RpcTransaction struct {
-	Version   string          `json:"version"`
-	Deps      []RpcOutPoint   `json:"deps"`
-	Inputs    []RpcCellInput  `json:"inputs"`
-	Outputs   []RpcCellOutput `json:"outputs"`
-	Witnesses []RpcWitness    `json:"witnesses"`
+	Version      string          `json:"version"`
+	Cell_deps    []RpcCellDep    `json:"cell_deps"`
+	Header_deps  []string        `json:"header_deps"`
+	Inputs       []RpcCellInput  `json:"inputs"`
+	Outputs      []RpcCellOutput `json:"outputs"`
+	Witnesses    []RpcWitness    `json:"witnesses"`
+	Outputs_data []string        `json:"outputs_data"`
 }
 
 type RpcTransactionView struct {
@@ -112,25 +153,20 @@ type RpcTxStatus struct {
 	Block_hash *string `json:"block_hash"`
 }
 
-type RpcSeal struct {
-	Nonce string `json:"nonce"`
-	Proof string `json:"proof"`
-}
-
 type RpcHeader struct {
-	Version           string  `json:"version"`
-	Parent_hash       string  `json:"parent_hash"`
-	Timestamp         string  `json:"timestamp"`
-	Number            string  `json:"number"`
-	Epoch             string  `json:"epoch"`
-	Transactions_root string  `json:"transactions_root"`
-	Witnesses_root    string  `json:"witnesses_root"`
-	Proposals_hash    string  `json:"proposals_hash"`
-	Difficulty        string  `json:"difficulty"`
-	Uncles_hash       string  `json:"uncles_hash"`
-	Uncles_count      string  `json:"uncles_count"`
-	Dao               string  `json:"dao"`
-	Seal              RpcSeal `json:"seal"`
+	Version           string `json:"version"`
+	Parent_hash       string `json:"parent_hash"`
+	Timestamp         string `json:"timestamp"`
+	Number            string `json:"number"`
+	Epoch             string `json:"epoch"`
+	Transactions_root string `json:"transactions_root"`
+	Witnesses_root    string `json:"witnesses_root"`
+	Proposals_hash    string `json:"proposals_hash"`
+	Difficulty        string `json:"difficulty"`
+	Uncles_hash       string `json:"uncles_hash"`
+	Uncles_count      string `json:"uncles_count"`
+	Dao               string `json:"dao"`
+	Nonce             string `json:"nonce"`
 }
 
 type RpcHeaderView struct {
@@ -164,13 +200,12 @@ type RpcBlockView struct {
 
 type RpcEpochView struct {
 	Number       string `json:"number"`
-	Epoch_reward string `json:"epoch_reward"`
 	Start_number string `json:"start_number"`
 	Length       string `json:"length"`
 	Difficulty   string `json:"difficulty"`
 }
 
-type RpcBlockRewardView struct {
+type RpcBlockReward struct {
 	Total           string `json:"total"`
 	Primary         string `json:"primary"`
 	Secondary       string `json:"secondary"`
@@ -179,9 +214,10 @@ type RpcBlockRewardView struct {
 }
 
 type RpcCellOutputWithOutPoint struct {
-	Out_point RpcOutPoint `json:"out_point"`
-	Capacity  string      `json:"capacity"`
-	Lock      RpcScript   `json:"lock"`
+	Out_point  RpcOutPoint `json:"out_point"`
+	Block_hash string      `json:"block_hash"`
+	Capacity   string      `json:"capacity"`
+	Lock       RpcScript   `json:"lock"`
 }
 
 type RpcCellWithStatus struct {

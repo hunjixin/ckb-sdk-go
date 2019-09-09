@@ -50,7 +50,7 @@ func (rpcGenerate *RpcGenerate) WalkStruct(ast *RustStruct) {
 		rpcGenerate.CodeBuffer = &bytes.Buffer{}
 		//write rpc struct
 		rpcName := "Rpc" + Capitalize(ast.Name)
-		rpcGenerate.AssignStmt = append(rpcGenerate.AssignStmt, "var T"+rpcName+"=reflect.TypeOf("+Capitalize(ast.Name)+"{})")
+		rpcGenerate.AssignStmt = append(rpcGenerate.AssignStmt, "var T"+rpcName+"=reflect.TypeOf(Rpc"+Capitalize(ast.Name)+"{})")
 		rpcGenerate.CodeBuffer.WriteString("type " + rpcName + " struct {\n")
 		for _, field := range ast.Fields {
 			rpcGenerate.WalkField(field)

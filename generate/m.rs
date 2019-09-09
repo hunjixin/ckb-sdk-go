@@ -1,13 +1,13 @@
+
 pub struct Alert {
     pub id: AlertId,
     pub cancel: AlertId,
-    pub signatures: Vec<JsonBytes>,
     pub min_version: Option<String>,
     pub max_version: Option<String>,
     pub priority: AlertPriority,
     pub notice_until: Timestamp,
     pub message: String,
-
+    pub signatures: Vec<JsonBytes>,
 }
 
 pub struct AlertMessage {
@@ -61,46 +61,39 @@ pub struct Script {
     pub code_hash: H256,
     pub hash_type: ScriptHashType,
 }
-
 pub struct CellOutput {
     pub capacity: Capacity,
-    pub data: JsonBytes,
     pub lock: Script,
     pub type_: Option<Script>,
 }
-
-pub struct CellOutPoint {
+pub struct OutPoint {
     pub tx_hash: H256,
     pub index: Unsigned,
 }
-
-pub struct OutPoint {
-    pub cell: Option<CellOutPoint>,
-    pub block_hash: Option<H256>,
-}
-
 pub struct CellInput {
     pub previous_output: OutPoint,
     pub since: Unsigned,
 }
-
 pub struct Witness {
     data: Vec<JsonBytes>,
 }
-
+pub struct CellDep {
+    out_point: OutPoint,
+    dep_type: DepType,
+}
 pub struct Transaction {
     pub version: Version,
-    pub deps: Vec<OutPoint>,
+    pub cell_deps: Vec<CellDep>,
+    pub header_deps: Vec<H256>,
     pub inputs: Vec<CellInput>,
     pub outputs: Vec<CellOutput>,
     pub witnesses: Vec<Witness>,
+    pub outputs_data: Vec<JsonBytes>,
 }
-
 pub struct TransactionView {
     pub inner: Transaction,
     pub hash: H256,
 }
-
 pub struct TransactionWithStatus {
     pub transaction: TransactionView,
     /// Indicate the Transaction status
@@ -110,11 +103,6 @@ pub struct TransactionWithStatus {
 pub struct TxStatus {
     pub status: Status,
     pub block_hash: Option<H256>,
-}
-
-pub struct Seal {
-    pub nonce: Unsigned,
-    pub proof: JsonBytes,
 }
 
 pub struct Header {
@@ -130,24 +118,20 @@ pub struct Header {
     pub uncles_hash: H256,
     pub uncles_count: Unsigned,
     pub dao: JsonBytes,
-    pub seal: Seal,
+    pub nonce: Unsigned,
 }
-
 pub struct HeaderView {
     pub inner: Header,
     pub hash: H256,
 }
-
 pub struct UncleBlock {
     pub header: Header,
     pub proposals: Vec<ProposalShortId>,
 }
-
 pub struct UncleBlockView {
     pub header: HeaderView,
     pub proposals: Vec<ProposalShortId>,
 }
-
 pub struct Block {
     pub header: Header,
     pub uncles: Vec<UncleBlock>,
@@ -161,25 +145,22 @@ pub struct BlockView {
     pub transactions: Vec<TransactionView>,
     pub proposals: Vec<ProposalShortId>,
 }
-
 pub struct EpochView {
     pub number: EpochNumber,
-    pub epoch_reward: Capacity,
     pub start_number: BlockNumber,
     pub length: BlockNumber,
     pub difficulty: U256,
 }
-
-pub struct BlockRewardView {
+pub struct BlockReward {
     pub total: Capacity,
     pub primary: Capacity,
     pub secondary: Capacity,
     pub tx_fee: Capacity,
     pub proposal_reward: Capacity,
 }
-
 pub struct CellOutputWithOutPoint {
     pub out_point: OutPoint,
+    pub block_hash: H256,
     pub capacity: Capacity,
     pub lock: Script,
 }
@@ -188,7 +169,6 @@ pub struct CellWithStatus {
     pub cell: Option<CellOutput>,
     pub status: String,
 }
-
 pub struct ChainInfo {
     // network name
     pub chain: String,
@@ -203,26 +183,28 @@ pub struct ChainInfo {
     // any network and blockchain warnings
     pub alerts: Vec<AlertMessage>,
 }
-
 pub struct DryRunResult {
     pub cycles: Cycle,
 }
-
 pub struct LiveCell {
     pub created_by: TransactionPoint,
     pub cell_output: CellOutput,
 }
+
+// This is used as return value of get_transactions_by_lock_hash RPC
 
 pub struct CellTransaction {
     pub created_by: TransactionPoint,
     pub consumed_by: Option<TransactionPoint>,
 }
 
+
 pub struct TransactionPoint {
     pub block_number: BlockNumber,
     pub tx_hash: H256,
     pub index: Unsigned,
 }
+
 
 pub struct LockHashIndexState {
     pub lock_hash: H256,
@@ -235,6 +217,7 @@ pub struct Node {
     pub addresses: Vec<NodeAddress>,
     pub is_outbound: Option<bool>,
 }
+
 
 pub struct NodeAddress {
     pub address: String,
@@ -255,7 +238,6 @@ pub struct TxPoolInfo {
     pub total_tx_cycles: Unsigned,
     pub last_txs_updated_at: Timestamp,
 }
-
 pub struct PeerState {
     // TODO use peer_id
     // peer session id
@@ -271,6 +253,7 @@ pub trait AlertRpc {
     #[rpc(name = "send_alert")]
     fn send_alert(&self, _alert: Alert) -> Result<()>;
 }
+
 
 pub trait ChainRpc {
     #[rpc(name = "get_block")]
@@ -315,7 +298,7 @@ pub trait ChainRpc {
     fn get_epoch_by_number(&self, number: EpochNumber) -> Result<Option<EpochView>>;
 
     #[rpc(name = "get_cellbase_output_capacity_details")]
-    fn get_cellbase_output_capacity_details(&self, _hash: H256) -> Result<Option<BlockRewardView>>;
+    fn get_cellbase_output_capacity_details(&self, _hash: H256) -> Result<Option<BlockReward>>;
 }
 
 pub trait ExperimentRpc {
@@ -334,6 +317,7 @@ pub trait ExperimentRpc {
     fn calculate_dao_maximum_withdraw(&self, _out_point: OutPoint, _hash: H256)
         -> Result<Capacity>;
 }
+
 
 pub trait IndexerRpc {
     #[rpc(name = "get_live_cells_by_lock_hash")]
@@ -368,6 +352,7 @@ pub trait IndexerRpc {
     fn get_lock_hash_index_states(&self) -> Result<Vec<LockHashIndexState>>;
 }
 
+
 pub trait MinerRpc {
     // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"get_block_template","params": ["0x1b1c832d02fdb4339f9868c8a8636c3d9dd10bd53ac7ce99595825bd6beeffb3", 1000, 1000]}' -H 'content-type:application/json' 'http://localhost:8114'
     #[rpc(name = "get_block_template")]
@@ -382,6 +367,7 @@ pub trait MinerRpc {
     #[rpc(name = "submit_block")]
     fn submit_block(&self, _work_id: String, _data: Block) -> Result<Option<H256>>;
 }
+
 
 pub trait NetworkRpc {
     // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"local_node_info","params": []}' -H 'content-type:application/json' 'http://localhost:8114'
@@ -408,6 +394,7 @@ pub trait NetworkRpc {
     ) -> Result<()>;
 }
 
+
 pub trait PoolRpc {
     // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"send_transaction","params": [{"version":2, "deps":[], "inputs":[], "outputs":[]}]}' -H 'content-type:application/json' 'http://localhost:8114'
     #[rpc(name = "send_transaction")]
@@ -418,10 +405,28 @@ pub trait PoolRpc {
     fn tx_pool_info(&self) -> Result<TxPoolInfo>;
 }
 
+
 pub trait StatsRpc {
     #[rpc(name = "get_blockchain_info")]
     fn get_blockchain_info(&self) -> Result<ChainInfo>;
 
     #[rpc(name = "get_peers_state")]
     fn get_peers_state(&self) -> Result<Vec<PeerState>>;
+}
+
+
+pub trait IntegrationTestRpc {
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"add_node","params": ["QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", "/ip4/192.168.2.100/tcp/30002"]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "add_node")]
+    fn add_node(&self, peer_id: String, address: String) -> Result<()>;
+
+    // curl -d '{"id": 2, "jsonrpc": "2.0", "method":"remove_node","params": ["QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS"]}' -H 'content-type:application/json' 'http://localhost:8114'
+    #[rpc(name = "remove_node")]
+    fn remove_node(&self, peer_id: String) -> Result<()>;
+
+    #[rpc(name = "process_block_without_verify")]
+    fn process_block_without_verify(&self, data: Block) -> Result<Option<H256>>;
+
+    #[rpc(name = "broadcast_transaction")]
+    fn broadcast_transaction(&self, transaction: Transaction) -> Result<H256>;
 }

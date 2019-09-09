@@ -6,18 +6,22 @@ import (
 )
 
 type RawTransaction struct {
-	Version uint32
-	Deps    []OutPoint
-	Inputs  []CellInput
-	Outputs []CellOutput
+	Version    uint32
+	CellDeps   []CellDep
+	HeadDeps   []H256
+	Inputs     []CellInput
+	Outputs    []CellOutput
+	OutputData [][]byte
 }
 
 func (tx *Transaction) TxHash() H256 {
 	rawTx := &RawTransaction{
-		Version: tx.Version,
-		Deps:    tx.Deps,
-		Inputs:  tx.Inputs,
-		Outputs: tx.Outputs,
+		Version:    tx.Version,
+		CellDeps:   tx.Cell_deps,
+		HeadDeps:   tx.Header_deps,
+		Inputs:     tx.Inputs,
+		Outputs:    tx.Outputs,
+		OutputData: tx.Outputs_data,
 	}
 	rawTxBytes, _ := bincode.Marshal(rawTx)
 	hBytes := crypto.Black256(rawTxBytes)
