@@ -175,7 +175,6 @@ func Test_Script(t *testing.T) {
 			AppendOutputData([]byte{})
 		expectSerize := "5100000010000000300000003100000068d5438ac952d2f584abf879527946a537e82c7f3c1cbf6d8ebf9767437d8e880120000000080000001400000059a27ef3ba84f061517d13f42cf44ed020610061"
 		serilizeByte, _ := hex.DecodeString(expectSerize)
-
 		tx := builder.Build()
 		rawTx := tx.RawTransaction()
 

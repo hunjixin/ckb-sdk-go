@@ -3,8 +3,6 @@ package ckbserize
 import (
 	"ckb-sdk-go/core"
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
 )
 
 const (
@@ -69,24 +67,23 @@ func serializeBytes(arr []byte) []byte {
 	return arr
 }
 
-func serializeStruct(data map[string][]byte) []byte {
+func serializeStruct(data *Seq) []byte {
 	result := []byte{}
-	for _, v := range data {
-		result = append(result, serializeBytes(v)...)
-	}
+	data.Range(func(s string, bytes []byte) {
+		result = append(result, serializeBytes(bytes)...)
+	})
 	return result
 }
 
-func serializeTable(table map[string][]byte) []byte {
+func serializeTable(table *Seq) []byte {
 	body := []byte{}
 	var lengths []int
-	for _, v := range table {
-		d := serializeBytes(v)
-		lengths = append(lengths, len(v))
+	table.Range(func(s string, bytes []byte) {
+		d := serializeBytes(bytes)
+		lengths = append(lengths, len(bytes))
 		body = append(body, d...)
-	}
-
-	headerLength := fullLengthSize + offsetSize*len(table)
+	})
+	headerLength := fullLengthSize + offsetSize*table.Len()
 	fullLength := toHexInLittleEndian(uint64(headerLength+len(body)), 4)
 	offsets := []byte{}
 	offsetsValues := getOffsets(lengths)
@@ -143,15 +140,10 @@ func SerializeScript(script core.Script) []byte {
 	serializedCodeHash := script.Code_hash[:]
 	serializedHashType := serializeHashType(script.Hash_type)
 	serializedArgs := serializeArgs(script.Args)
-	table := map[string][]byte{
-		"codeHas": serializedCodeHash,
-		"hashTyp": serializedHashType,
-		"args":    serializedArgs,
-	}
-	fmt.Println(hex.EncodeToString(serializedCodeHash))
-	fmt.Println(hex.EncodeToString(serializedHashType))
-	fmt.Println(hex.EncodeToString(serializedArgs))
-	fmt.Println(hex.EncodeToString( serializeTable(table)))
+	table := NewSeq()
+	table.Add("codeHash", serializedCodeHash)
+	table.Add("hashType", serializedHashType)
+	table.Add("args", serializedArgs)
 	return serializeTable(table)
 }
 
@@ -160,10 +152,9 @@ func SerializeVersion(version uint32) []byte {
 }
 
 func SerializeOutPoint(outPoint core.OutPoint) []byte {
-	data := map[string][]byte{
-		"txHash": outPoint.Tx_hash[:],
-		"index":  toHexInLittleEndian(outPoint.Index, 4),
-	}
+	data := NewSeq()
+	data.Add("txHash", outPoint.Tx_hash[:])
+	data.Add("index", toHexInLittleEndian(outPoint.Index, 4))
 	return serializeStruct(data)
 }
 
@@ -179,10 +170,9 @@ func SerializeDepType(depType core.DepType) []byte {
 func SerializeCellDep(dep core.CellDep) []byte {
 	serializedOutPoint := SerializeOutPoint(dep.Out_point)
 	serializedDepType := SerializeDepType(dep.Dep_type)
-	data := map[string][]byte{
-		"outPoint": serializedOutPoint,
-		"depTyp":   serializedDepType,
-	}
+	data := NewSeq()
+	data.Add("outPoint", serializedOutPoint)
+	data.Add("depTyp", serializedDepType)
 	return serializeStruct(data)
 }
 
@@ -206,10 +196,9 @@ func SerializeHeaderDeps(deps []core.H256) []byte {
 func SerializeInput(input core.CellInput) []byte {
 	serializedOutPoint := SerializeOutPoint(input.Previous_output)
 	serializedSince := toHexInLittleEndian(input.Since, 8)
-	data := map[string][]byte{
-		"since":          serializedSince,
-		"previousOutput": serializedOutPoint,
-	}
+	data := NewSeq()
+	data.Add("since", serializedSince)
+	data.Add("previousOutput", serializedOutPoint)
 	return serializeStruct(data)
 }
 
@@ -228,15 +217,10 @@ func SerializeOutput(output core.CellOutput) []byte {
 	if output.Type_ != nil {
 		serialiedTypeScript = SerializeScript(*output.Type_)
 	}
-	data := map[string][]byte{
-		"capacity": serializedCapacity,
-		"lock":     serializedLockScript,
-		"type":     serialiedTypeScript,
-	}
-	fmt.Println(hex.EncodeToString(serializedCapacity))
-	fmt.Println(hex.EncodeToString(serializedLockScript))
-	fmt.Println(hex.EncodeToString(serialiedTypeScript))
-	//fmt.Println(hex.EncodeToString(serializeTable(data)))
+	data := NewSeq()
+	data.Add("capacity", serializedCapacity)
+	data.Add("lock", serializedLockScript)
+	data.Add("type", serialiedTypeScript)
 	return serializeTable(data)
 }
 
@@ -264,14 +248,40 @@ func SerializeRawTransaction(rawTransaction core.RawTransaction) []byte {
 	serializedOutputs := SerializeOutputs(rawTransaction.Outputs)
 	serializedOutputsData := SerializeOutputsData(rawTransaction.OutputData)
 
-	table := map[string][]byte{
-		"version":     serializedVersion,
-		"cellDeps":    serializedCellDeps,
-		"headerDeps":  serializedHeaderDeps,
-		"inputs":      serializedInputs,
-		"outputs":     serializedOutputs,
-		"outputsData": serializedOutputsData,
-	}
-
+	table := NewSeq()
+	table.Add("version", serializedVersion)
+	table.Add("cellDeps", serializedCellDeps)
+	table.Add("headerDeps", serializedHeaderDeps)
+	table.Add("inputs", serializedInputs)
+	table.Add("outputs", serializedOutputs)
+	table.Add("outputsData", serializedOutputsData)
 	return serializeTable(table)
+}
+
+type Seq struct {
+	Keys []string
+	Value map[string][]byte
+}
+
+func NewSeq() *Seq {
+	return &Seq{
+		Keys:  []string{},
+		Value: map[string][]byte{},
+	}
+}
+
+func (seq *Seq) Add(key string, value []byte) {
+	seq.Keys = append(seq.Keys, key)
+	seq.Value[key] = value
+}
+
+func(seq *Seq) Range(f func( string,  []byte)) {
+	for _, key := range seq.Keys {
+		val, _ := seq.Value[key]
+		f(key, val)
+	}
+}
+
+func (seq *Seq) Len() int {
+	return len(seq.Keys)
 }
