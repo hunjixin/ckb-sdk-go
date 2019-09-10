@@ -119,8 +119,7 @@ func (builder *TransactionBuilder) Build() core.Transaction {
 func SignTx(tx *TransactionBuilder, priv *secp256k1.PrivateKey) []byte {
 	raw := tx.Build()
 	txHash := raw.TxHash()
-	hash := crypto.Black256(txHash[:])
-	sig := crypto.SignMesage(hash[:], priv)
+	sig := crypto.SignMesage(txHash[:], priv)
 	tx.AppendWitness([][]byte{sig})
 	return sig
 }

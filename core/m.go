@@ -14,6 +14,17 @@ type RawTransaction struct {
 	OutputData [][]byte
 }
 
+func (tx *Transaction) RawTransaction() RawTransaction {
+	return RawTransaction{
+		Version:    tx.Version,
+		CellDeps:   tx.Cell_deps,
+		HeadDeps:   tx.Header_deps,
+		Inputs:     tx.Inputs,
+		Outputs:    tx.Outputs,
+		OutputData: tx.Outputs_data,
+	}
+}
+
 func (tx *Transaction) TxHash() H256 {
 	rawTx := &RawTransaction{
 		Version:    tx.Version,

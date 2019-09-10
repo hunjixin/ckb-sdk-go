@@ -123,8 +123,8 @@ type CellInput struct {
 
 
 type CellDep struct {
-	out_point OutPoint
-	dep_type  DepType
+	Out_point OutPoint
+	Dep_type  DepType
 }
 
 type Transaction struct {

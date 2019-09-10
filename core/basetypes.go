@@ -29,12 +29,19 @@ const (
 	Type ScriptHashType = 1
 )
 
-type DepType string
+type RpcDepType string
 
-/*const (
-	Code     ScriptHashType = "code"
-	DepGroup ScriptHashType = "depGroup"
-)*/
+const (
+	RpcCode     RpcDepType = "code"
+	RpcDepGroup RpcDepType = "depGroup"
+)
+
+type DepType uint8
+
+const (
+	Code     DepType = 0
+	DepGroup DepType = 1
+)
 
 type CellStatus string
 
@@ -91,6 +98,6 @@ func (_ H256) UnMarshal(binCode *bincode.BinCodeDeSerizlize) (reflect.Value, err
 }
 
 func (_ H256) Marshal(binCode *bincode.BinCodeSerizlize, val reflect.Value) error {
-	hexH256 := "0x" + hex.EncodeToString(val.Interface().(H256).Bytes())
-	return binCode.SliceBytes(reflect.ValueOf([]byte(hexH256)))
+	//hexH256 := hex.EncodeToString(val.Interface().(H256).Bytes())
+	return binCode.ArrayBytes(val.Slice(0, val.Len()))
 }

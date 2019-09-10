@@ -120,12 +120,12 @@ type RpcCellInput struct {
 }
 
 type RpcWitness struct {
-	data []string
+	Data []string
 }
 
 type RpcCellDep struct {
 	out_point RpcOutPoint
-	dep_type  DepType
+	dep_type  RpcDepType
 }
 
 type RpcTransaction struct {
