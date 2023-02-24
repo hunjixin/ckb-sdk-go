@@ -16,6 +16,5 @@ require (
 	github.com/hunjixin/automapper v0.0.0-20190819023506-f5120f46a84f
 	github.com/onsi/gomega v1.6.0 // indirect
 	github.com/ybbus/jsonrpc v2.1.2+incompatible
-	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3 // indirect
-	golang.org/x/sys v0.0.0-20190412213103-97732733099d // indirect
+	golang.org/x/net v0.7.0 // indirect
 )
